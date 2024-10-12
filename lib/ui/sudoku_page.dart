@@ -54,7 +54,11 @@ class Menu extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {},
-      icon: Icon(icon),
+      icon: SizedBox(
+        height: 36,
+        width: 36,
+        child: Icon(icon),
+      ),
     );
   }
 }
