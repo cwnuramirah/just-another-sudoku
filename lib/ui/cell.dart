@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:just_another_sudoku/data/models/board_model.dart';
+import 'package:just_another_sudoku/data/models/cell_model.dart';
+import 'package:provider/provider.dart';
 
 class Cell extends StatelessWidget {
   const Cell({
@@ -6,20 +9,22 @@ class Cell extends StatelessWidget {
     required this.board,
     required this.column,
     required this.row,
-    required this.selectedColumn,
-    required this.selectedRow,
-    required this.onCellTap,
   });
 
-  final List<List<int>> board;
+  final List<List<CellModel>> board;
   final int column;
   final int row;
-  final int selectedColumn;
-  final int selectedRow;
-  final Function(int, int) onCellTap;
 
   @override
   Widget build(BuildContext context) {
+    final boardModel = Provider.of<BoardModel>(context);
+    final selectedRow =
+        context.select<BoardModel, int>((model) => model.selectedRow);
+    final selectedColumn =
+        context.select<BoardModel, int>((model) => model.selectedColumn);
+
+    CellModel currentCell = board[column][row];
+
     bool isInSameColumn = column == selectedColumn;
     bool isInSameRow = row == selectedRow;
     bool isInSameBox =
@@ -36,15 +41,34 @@ class Cell extends StatelessWidget {
 
       // SELECTED CELL
       if (column == selectedColumn && row == selectedRow) {
-        return Colors.blue.shade200;
+        backgroundColor = Colors.blue.shade200;
+      }
+
+      // ERROR CELL
+      if (currentCell.isError) {
+        backgroundColor = Colors.red.shade100;
       }
 
       return backgroundColor;
     }
 
+    Color getTextColor() {
+      Color textColor = Colors.black;
+
+      if (!currentCell.isFixed) {
+        textColor = Colors.blue.shade700;
+      }
+
+      if (currentCell.isError && !currentCell.isFixed) {
+        textColor = Colors.red;
+      }
+
+      return textColor;
+    }
+
     return GestureDetector(
       onTap: () {
-        onCellTap(column, row);
+        boardModel.selectCell(column, row);
       },
       child: Container(
         margin: _boxMargin(column, row),
@@ -54,8 +78,8 @@ class Cell extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            board[column][row] != 0 ? board[column][row].toString() : '',
-            style: const TextStyle(fontSize: 22.0, color: Colors.black),
+            currentCell.value != 0 ? currentCell.value.toString() : '',
+            style: TextStyle(fontSize: 22.0, color: getTextColor()),
           ),
         ),
       ),
@@ -63,7 +87,7 @@ class Cell extends StatelessWidget {
   }
 
   // served as 3x3 box border
-  _boxMargin(int c, int r) {
+  EdgeInsetsGeometry _boxMargin(int c, int r) {
     double left = 0.0;
     double bottom = 0.0;
 

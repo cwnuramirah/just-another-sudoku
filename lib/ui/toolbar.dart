@@ -1,12 +1,19 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:just_another_sudoku/data/models/board_model.dart';
+import 'package:provider/provider.dart';
 
 class Toolbar extends StatelessWidget {
   const Toolbar({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final boardModel = Provider.of<BoardModel>(context, listen: false);
+    final selectedRow =
+        context.select<BoardModel, int>((model) => model.selectedRow);
+    final selectedColumn =
+        context.select<BoardModel, int>((model) => model.selectedColumn);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -20,7 +27,9 @@ class Toolbar extends StatelessWidget {
           icon: TablerIcons.arrow_back_up,
         ),
         CircleIconButton(
-          onPressed: () {},
+          onPressed: () {
+            boardModel.updateCell(selectedColumn, selectedRow, 0);
+          },
           icon: TablerIcons.eraser,
         ),
         CircleIconButtonWithBadge(
@@ -63,10 +72,7 @@ class CircleIconButtonWithBadge extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
           child: DefaultTextStyle(
             style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.black
-            ),
+                fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black),
             child: badge,
           ),
         )
