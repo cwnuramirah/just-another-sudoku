@@ -4,88 +4,76 @@ class SudokuErrorHandler {
   void handleCellError(List<List<CellModel>> board, int col, int row, int value) {
     _resetErrors(board, col, row);
 
-    if (value != 0) {
-      board[col][row].isError = _checkForErrors(board, col, row, value);
-    } else {
-      board[col][row].isError = false;
-    }
+    board[col][row].isError = value != 0 && _checkForErrors(board, col, row, value);
   }
 
   bool _checkForErrors(List<List<CellModel>> board, int col, int row, int value) {
     bool hasError = false;
 
-    for (int i = 0; i < 9; i++) {
-      // Check row for duplicates
-      if (i != row && board[col][i].value == value) {
-        board[col][i].isError = true;
-        hasError = true;
-      }
+    bool inRow = _hasDuplicateInRow(board, col, row, value);
+    bool inColumn = _hasDuplicateInColumn(board, col, row, value);
+    bool inBox = _hasDuplicateInBox(board, col, row, value);
 
-      // Check column for duplicates
-      if (i != col && board[i][row].value == value) {
-        board[i][row].isError = true;
-        hasError = true;
-      }
-
-      // Check 3x3 box for duplicates
-      int boxColStart = (col ~/ 3) * 3;
-      int boxRowStart = (row ~/ 3) * 3;
-      int boxCol = boxColStart + (i % 3);
-      int boxRow = boxRowStart + (i ~/ 3);
-
-      if ((boxCol != col || boxRow != row) &&
-          board[boxCol][boxRow].value == value) {
-        board[boxCol][boxRow].isError = true;
-        hasError = true;
-      }
-    }
-
+    hasError =  inRow || inColumn || inBox;
     return hasError;
   }
 
   void _resetErrors(List<List<CellModel>> board, int col, int row) {
     for (int i = 0; i < 9; i++) {
-      // Reset error for cells in the same row
-      if (board[col][i].value != 0 &&
-          !_hasErrors(board, col, i, board[col][i].value)) {
-        board[col][i].isError = false;
-      }
+      _resetErrorForCell(board, col, i); // Reset row
+      _resetErrorForCell(board, i, row); // Reset column
+    }
 
-      // Reset error for cells in the same column
-      if (board[i][row].value != 0 &&
-          !_hasErrors(board, i, row, board[i][row].value)) {
-        board[i][row].isError = false;
-      }
+    _iterateBox(board, col, row, (boxCol, boxRow) {
+      _resetErrorForCell(board, boxCol, boxRow); // Reset 3x3 box
+    });
+  }
 
-      // Reset error for cells in the same 3x3 box
-      int boxColStart = (col ~/ 3) * 3;
-      int boxRowStart = (row ~/ 3) * 3;
-      int boxCol = boxColStart + (i % 3);
-      int boxRow = boxRowStart + (i ~/ 3);
-
-      if (board[boxCol][boxRow].value != 0 &&
-          !_hasErrors(board, boxCol, boxRow, board[boxCol][boxRow].value)) {
-        board[boxCol][boxRow].isError = false;
-      }
+  void _resetErrorForCell(List<List<CellModel>> board, int col, int row) {
+    var cell = board[col][row];
+    if (cell.value != 0 && !_checkForErrors(board, col, row, cell.value)) {
+      cell.isError = false;
     }
   }
 
-  bool _hasErrors(List<List<CellModel>> board, int col, int row, int value) {
+  bool _hasDuplicateInRow(List<List<CellModel>> board, int col, int row, int value) {
     for (int i = 0; i < 9; i++) {
-      // Check row
-      if (i != row && board[col][i].value == value) return true;
-
-      // Check column
-      if (i != col && board[i][row].value == value) return true;
-
-      // Check 3x3 box
-      int boxColStart = (col ~/ 3) * 3;
-      int boxRowStart = (row ~/ 3) * 3;
-      int boxCol = boxColStart + (i % 3);
-      int boxRow = boxRowStart + (i ~/ 3);
-      if ((boxCol != col || boxRow != row) &&
-          board[boxCol][boxRow].value == value) return true;
+      if (i != row && board[col][i].value == value) {
+        board[col][i].isError = true;
+        return true;
+      }
     }
     return false;
+  }
+
+  bool _hasDuplicateInColumn(List<List<CellModel>> board, int col, int row, int value) {
+    for (int i = 0; i < 9; i++) {
+      if (i != col && board[i][row].value == value) {
+        board[i][row].isError = true;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool _hasDuplicateInBox(List<List<CellModel>> board, int col, int row, int value) {
+    bool hasError = false;
+    _iterateBox(board, col, row, (boxCol, boxRow) {
+      if ((boxCol != col || boxRow != row) && board[boxCol][boxRow].value == value) {
+        board[boxCol][boxRow].isError = true;
+        hasError = true;
+      }
+    });
+    return hasError;
+  }
+
+  void _iterateBox(List<List<CellModel>> board, int col, int row, void Function(int, int) action) {
+    int boxColStart = (col ~/ 3) * 3;
+    int boxRowStart = (row ~/ 3) * 3;
+    for (int i = 0; i < 9; i++) {
+      int boxCol = boxColStart + (i % 3);
+      int boxRow = boxRowStart + (i ~/ 3);
+      action(boxCol, boxRow);
+    }
   }
 }
