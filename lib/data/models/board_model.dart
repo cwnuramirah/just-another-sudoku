@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
+import 'package:just_another_sudoku/logic/sudoku_error_handler.dart';
 
 class BoardModel with ChangeNotifier {
-    final List<List<int>> _initBoard = [
+  final List<List<int>> _initBoard = [
     [0, 0, 3, 1, 2, 4, 0, 0, 7],
     [0, 0, 1, 6, 3, 9, 8, 4, 0],
     [9, 4, 6, 0, 8, 0, 0, 1, 3],
@@ -23,13 +24,14 @@ class BoardModel with ChangeNotifier {
   }
 
   List<List<CellModel>> _generateBoard() {
-    return List.generate(9, (column) => 
-      List.generate(9, (row) => 
-        CellModel(
-          value: _initBoard[column][row], 
-          isFixed: _initBoard[column][row] != 0
-        )
-      )
+    return List.generate(
+      9,
+      (column) => List.generate(
+        9,
+        (row) => CellModel(
+            value: _initBoard[column][row],
+            isFixed: _initBoard[column][row] != 0),
+      ),
     );
   }
 
@@ -45,8 +47,12 @@ class BoardModel with ChangeNotifier {
   }
 
   void updateCell(int col, int row, int value) {
-    if (!(_board[col][row].isFixed)) {
-      _board[col][row] = CellModel(value: value, isFixed: false);
+    if (value < 0 || value > 9) return; // Ignore invalid values
+    if (!_board[col][row].isFixed) {
+      _board[col][row].value = value;
+
+      SudokuErrorHandler().handleCellError(_board, col, row, value);
+
       notifyListeners();
     }
   }

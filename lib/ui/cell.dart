@@ -17,73 +17,76 @@ class Cell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boardModel = Provider.of<BoardModel>(context);
-    final selectedRow =
-        context.select<BoardModel, int>((model) => model.selectedRow);
-    final selectedColumn =
-        context.select<BoardModel, int>((model) => model.selectedColumn);
-
     CellModel currentCell = board[column][row];
 
-    bool isInSameColumn = column == selectedColumn;
-    bool isInSameRow = row == selectedRow;
-    bool isInSameBox =
-        (column ~/ 3 == selectedColumn ~/ 3) && (row ~/ 3 == selectedRow ~/ 3);
+    return Selector<BoardModel, CellModel>(
+        selector: (_, boardModel) => boardModel.board[column][row],
+        builder: (_, cellModel, __) {
+          final boardModel = Provider.of<BoardModel>(context);
+          final selectedRow = boardModel.selectedRow;
+          final selectedColumn = boardModel.selectedColumn;
 
-    Color getBackgroundColor() {
-      Color backgroundColor;
-      if (isInSameColumn || isInSameRow || isInSameBox) {
-        // HIGHLIGHT CELL
-        backgroundColor = Colors.blue.shade50;
-      } else {
-        backgroundColor = Colors.white;
-      }
+          bool isInSameColumn = column == selectedColumn;
+          bool isInSameRow = row == selectedRow;
+          bool isInSameBox = (column ~/ 3 == selectedColumn ~/ 3) &&
+              (row ~/ 3 == selectedRow ~/ 3);
 
-      // SELECTED CELL
-      if (column == selectedColumn && row == selectedRow) {
-        backgroundColor = Colors.blue.shade200;
-      }
+          Color getBackgroundColor() {
+            Color backgroundColor;
+            if (isInSameColumn || isInSameRow || isInSameBox) {
+              // HIGHLIGHT CELL
+              backgroundColor = Colors.blue.shade50;
+            } else {
+              // IDLE CELL
+              backgroundColor = Colors.white;
+            }
 
-      // ERROR CELL
-      if (currentCell.isError) {
-        backgroundColor = Colors.red.shade100;
-      }
+            // SELECTED CELL
+            if (column == selectedColumn && row == selectedRow) {
+              backgroundColor = Colors.blue.shade200;
+            }
 
-      return backgroundColor;
-    }
+            // ERROR CELL
+            if (currentCell.isError) {
+              backgroundColor = Colors.red.shade100;
+            }
 
-    Color getTextColor() {
-      Color textColor = Colors.black;
+            return backgroundColor;
+          }
 
-      if (!currentCell.isFixed) {
-        textColor = Colors.blue.shade700;
-      }
+          Color getTextColor() {
+            Color textColor = Colors.black;
 
-      if (currentCell.isError && !currentCell.isFixed) {
-        textColor = Colors.red;
-      }
+            if (!currentCell.isFixed) {
+              textColor = Colors.blue.shade700;
+            }
 
-      return textColor;
-    }
+            if (currentCell.isError && !currentCell.isFixed) {
+              textColor = Colors.red;
+            }
 
-    return GestureDetector(
-      onTap: () {
-        boardModel.selectCell(column, row);
-      },
-      child: Container(
-        margin: _boxMargin(column, row),
-        decoration: BoxDecoration(
-          border: _cellBorder(column, row),
-          color: getBackgroundColor(),
-        ),
-        child: Center(
-          child: Text(
-            currentCell.value != 0 ? currentCell.value.toString() : '',
-            style: TextStyle(fontSize: 22.0, color: getTextColor()),
-          ),
-        ),
-      ),
-    );
+            return textColor;
+          }
+
+          return GestureDetector(
+            onTap: () {
+              boardModel.selectCell(column, row);
+            },
+            child: Container(
+              margin: _boxMargin(column, row),
+              decoration: BoxDecoration(
+                border: _cellBorder(column, row),
+                color: getBackgroundColor(),
+              ),
+              child: Center(
+                child: Text(
+                  currentCell.value != 0 ? currentCell.value.toString() : '',
+                  style: TextStyle(fontSize: 22.0, color: getTextColor()),
+                ),
+              ),
+            ),
+          );
+        });
   }
 
   // served as 3x3 box border

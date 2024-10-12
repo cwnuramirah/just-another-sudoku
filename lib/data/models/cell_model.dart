@@ -1,5 +1,5 @@
 class CellModel {
-  final int value;
+  int value;
   bool isFixed;
   bool isError;
 
