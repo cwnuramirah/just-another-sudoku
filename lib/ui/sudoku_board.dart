@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:just_another_sudoku/data/models/board_model.dart';
 import 'package:just_another_sudoku/ui/cell.dart';
-import 'package:provider/provider.dart';
 
 class SudokuBoard extends StatefulWidget {
   const SudokuBoard({super.key});
@@ -14,7 +12,6 @@ class _SudokuBoardState extends State<SudokuBoard> {
 
   @override
   Widget build(BuildContext context) {
-      final board = Provider.of<BoardModel>(context).board;
 
     return AspectRatio(
       aspectRatio: 0.98,
@@ -35,7 +32,7 @@ class _SudokuBoardState extends State<SudokuBoard> {
                       for (int row = 0; row < 9; row++)
                         Expanded(
                           child: Cell(
-                            board: board,
+                            key: ValueKey('cell-$col-$row'),
                             column: col,
                             row: row,
                           ),

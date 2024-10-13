@@ -7,22 +7,18 @@ import 'package:provider/provider.dart';
 class Cell extends StatelessWidget {
   const Cell({
     super.key,
-    required this.board,
     required this.column,
     required this.row,
   });
 
-  final List<List<CellModel>> board;
   final int column;
   final int row;
 
   @override
   Widget build(BuildContext context) {
-    CellModel currentCell = board[column][row];
-
     return Selector<BoardModel, CellModel>(
         selector: (_, boardModel) => boardModel.board[column][row],
-        builder: (_, cellModel, __) {
+        builder: (_, cell, __) {
           final boardModel = Provider.of<BoardModel>(context);
           final selectedRow = boardModel.selectedRow;
           final selectedColumn = boardModel.selectedColumn;
@@ -30,7 +26,7 @@ class Cell extends StatelessWidget {
           CellStyle cellStyle = CellStyle(
             column: column,
             row: row,
-            currentCell: currentCell,
+            cell: cell,
             selectedColumn: selectedColumn,
             selectedRow: selectedRow,
           );
@@ -45,30 +41,28 @@ class Cell extends StatelessWidget {
                 border: cellStyle.getGreyBorder(),
                 color: cellStyle.getBackgroundColor(),
               ),
-              child: currentCell.notes.isEmpty
+              child: cell.notes.isEmpty
                   ? Center(
                       child: Text(
-                        currentCell.value != 0
-                            ? currentCell.value.toString()
-                            : '',
+                        cell.value != 0 ? cell.value.toString() : '',
                         style: TextStyle(
                             fontSize: 22.0, color: cellStyle.getTextColor()),
                       ),
                     )
                   : Center(
                       child: GridView.count(
-                        crossAxisCount: 3,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: [
-                          for (int i = 0; i < 9; i++)
-                            Center(
-                              child: Text(
-                                '$i',
-                                style: const TextStyle(
-                                    color: Colors.grey, fontSize: 10.0),
-                              ),
+                        crossAxisCount: 3, // Display notes in a 3x3 grid
+                        children: List.generate(9, (index) {
+                          return Center(
+                            child: Text(
+                              cell.notes.contains(index + 1)
+                                  ? '${index + 1}'
+                                  : '',
+                              style: const TextStyle(
+                                  color: Colors.black45, fontSize: 10.5, fontWeight: FontWeight.w600),
                             ),
-                        ],
+                          );
+                        }),
                       ),
                     ),
             ),

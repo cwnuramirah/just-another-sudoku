@@ -4,14 +4,14 @@ import 'package:just_another_sudoku/data/models/cell_model.dart';
 class CellStyle {
   final int column;
   final int row;
-  final CellModel currentCell;
+  final CellModel cell;
   final int selectedColumn;
   final int selectedRow;
 
   CellStyle({
     required this.column,
     required this.row,
-    required this.currentCell,
+    required this.cell,
     required this.selectedColumn,
     required this.selectedRow,
   });
@@ -37,7 +37,7 @@ class CellStyle {
     }
 
     // ERROR CELL
-    if (currentCell.isError) {
+    if (cell.isError) {
       backgroundColor = Colors.red.shade100;
     }
 
@@ -47,11 +47,11 @@ class CellStyle {
   Color getTextColor() {
     Color textColor = Colors.black;
 
-    if (!currentCell.isFixed) {
+    if (!cell.isFixed) {
       textColor = Colors.blue.shade700;
     }
 
-    if (currentCell.isError && !currentCell.isFixed) {
+    if (cell.isError && !cell.isFixed) {
       textColor = Colors.red;
     }
 
