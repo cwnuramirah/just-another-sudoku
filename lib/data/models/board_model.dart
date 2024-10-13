@@ -18,6 +18,7 @@ class BoardModel with ChangeNotifier {
   late List<List<CellModel>> _board;
   int _selectedRow = 0;
   int _selectedColumn = 0;
+  bool _noteToggled = false;
 
   BoardModel() {
     _board = _generateBoard();
@@ -39,6 +40,7 @@ class BoardModel with ChangeNotifier {
 
   int get selectedRow => _selectedRow;
   int get selectedColumn => _selectedColumn;
+  bool get noteToggled => _noteToggled;
 
   void selectCell(int column, int row) {
     _selectedRow = row;
@@ -46,7 +48,10 @@ class BoardModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateCell(int col, int row, int value) {
+  void updateCell(int value) {
+    int col = _selectedColumn;
+    int row = _selectedRow;
+
     if (value < 0 || value > 9) return; // Ignore invalid values
     if (!_board[col][row].isFixed) {
       _board[col][row].value = value;
@@ -55,6 +60,35 @@ class BoardModel with ChangeNotifier {
 
       notifyListeners();
     }
+  }
+
+  void toggleNote() {
+    _noteToggled = !_noteToggled;
+    notifyListeners();
+  }
+
+  void addNote(int number) {
+    if (number >= 1 && number <= 9) {
+      if (_board[_selectedColumn][_selectedRow].value != 0) {
+        updateCell(0);
+      }
+      if (_board[_selectedColumn][_selectedRow].notes.contains(number)) {
+        removeNote(number);
+      } else {
+        _board[_selectedColumn][_selectedRow].notes.add(number);
+      }
+    }
+    notifyListeners();
+  }
+
+  void removeNote(int number) {
+    _board[_selectedColumn][_selectedRow].notes.remove(number);
+    notifyListeners();
+  }
+
+  void clearNotes() {
+    _board[_selectedColumn][_selectedRow].notes.clear();
+    notifyListeners();
   }
 
   // Reset the board to the initial state

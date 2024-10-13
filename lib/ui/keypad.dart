@@ -21,7 +21,14 @@ class Keypad extends StatelessWidget {
             width: 34.0,
             child: TextButton(
               onPressed: () {
-                boardModel.updateCell(selectedColumn, selectedRow, i + 1);
+                if (!boardModel.board[selectedColumn][selectedRow].isFixed) {
+                  if (!boardModel.noteToggled) {
+                    boardModel.clearNotes();
+                    boardModel.updateCell(i + 1);
+                  } else {
+                    boardModel.addNote(i + 1);
+                  }
+                }
               },
               style: TextButton.styleFrom(padding: EdgeInsets.zero),
               child: Text(

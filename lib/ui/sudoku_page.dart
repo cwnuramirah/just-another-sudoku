@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:just_another_sudoku/data/models/board_model.dart';
+import 'package:just_another_sudoku/data/models/cell_model.dart';
 import 'package:just_another_sudoku/ui/keypad.dart';
 import 'package:just_another_sudoku/ui/sudoku_board.dart';
 import 'package:just_another_sudoku/ui/timer.dart';
@@ -12,8 +13,12 @@ class SudokuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => BoardModel(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => BoardModel()),
+        ChangeNotifierProvider(create: (context) => CellModel())
+      ],
+      
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,

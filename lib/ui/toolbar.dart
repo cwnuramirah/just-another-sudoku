@@ -8,12 +8,8 @@ class Toolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boardModel = Provider.of<BoardModel>(context, listen: false);
-    final selectedRow =
-        context.select<BoardModel, int>((model) => model.selectedRow);
-    final selectedColumn =
-        context.select<BoardModel, int>((model) => model.selectedColumn);
-
+    final boardModel = Provider.of<BoardModel>(context);
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -28,14 +24,20 @@ class Toolbar extends StatelessWidget {
         ),
         CircleIconButton(
           onPressed: () {
-            boardModel.updateCell(selectedColumn, selectedRow, 0);
+            boardModel.updateCell(0);
+            boardModel.clearNotes();
           },
           icon: TablerIcons.eraser,
         ),
-        CircleIconButtonWithBadge(
-          onPressed: () {},
-          icon: TablerIcons.pencil,
-          badge: const Text('OFF'),
+        SizedBox(
+          width: 76.0,
+          child: CircleIconButtonWithBadge(
+            onPressed: () {
+              boardModel.toggleNote();
+            },
+            icon: TablerIcons.pencil,
+            badge: Text(boardModel.noteToggled ? 'ON' : 'OFF'),
+          ),
         ),
       ],
     );
