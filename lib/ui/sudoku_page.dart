@@ -22,7 +22,7 @@ class SudokuPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Timer(),
+          title: const TimerButton(),
           actions: const [Menu()],
         ),
         body: const SafeArea(

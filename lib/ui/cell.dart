@@ -22,6 +22,7 @@ class Cell extends StatelessWidget {
           final boardModel = Provider.of<BoardModel>(context);
           final selectedRow = boardModel.selectedRow;
           final selectedColumn = boardModel.selectedColumn;
+          final hide = boardModel.boardHidden;
 
           CellStyle cellStyle = CellStyle(
             column: column,
@@ -39,14 +40,17 @@ class Cell extends StatelessWidget {
               margin: cellStyle.getBoxMargin(),
               decoration: BoxDecoration(
                 border: cellStyle.getGreyBorder(),
-                color: cellStyle.getBackgroundColor(),
+                color: !hide ? cellStyle.getBackgroundColor() : Colors.white,
               ),
               child: cell.notes.isEmpty
                   ? Center(
                       child: Text(
                         cell.value != 0 ? cell.value.toString() : '',
                         style: TextStyle(
-                            fontSize: 22.0, color: cellStyle.getTextColor()),
+                            fontSize: 22.0,
+                            color: !hide
+                                ? cellStyle.getTextColor()
+                                : Colors.transparent),
                       ),
                     )
                   : Center(
@@ -58,8 +62,11 @@ class Cell extends StatelessWidget {
                               cell.notes.contains(index + 1)
                                   ? '${index + 1}'
                                   : '',
-                              style: const TextStyle(
-                                  color: Colors.black45, fontSize: 10.5, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                color: !hide ? Colors.black45 : Colors.transparent,
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           );
                         }),

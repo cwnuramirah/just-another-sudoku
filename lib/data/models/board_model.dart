@@ -19,6 +19,7 @@ class BoardModel with ChangeNotifier {
   int _selectedRow = 0;
   int _selectedColumn = 0;
   bool _noteToggled = false;
+  bool _boardHidden = false;
 
   BoardModel() {
     _board = _generateBoard();
@@ -41,6 +42,12 @@ class BoardModel with ChangeNotifier {
   int get selectedRow => _selectedRow;
   int get selectedColumn => _selectedColumn;
   bool get noteToggled => _noteToggled;
+  bool get boardHidden => _boardHidden;
+
+  void toggleHide() {
+    _boardHidden = !_boardHidden;
+    notifyListeners();
+  }
 
   void selectCell(int column, int row) {
     _selectedRow = row;
