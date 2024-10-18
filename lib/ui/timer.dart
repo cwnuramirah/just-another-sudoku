@@ -67,12 +67,22 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
                 label: 'Options',
               ),
               ExpandedTextButton(
-                onPressed: () {},
+                onPressed: () {
+                  boardModel.resetBoard();
+                  time.reset();
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
                 icon: TablerIcons.home,
                 label: 'Return Home',
               ),
               ExpandedTextButton(
-                onPressed: () {},
+                onPressed: () {
+                  boardModel.resetBoard();
+                  time.reset();
+                  boardModel.toggleHide();
+                  time.start();
+                  Navigator.of(context).pop();
+                },
                 icon: TablerIcons.reload,
                 label: 'Restart',
               ),

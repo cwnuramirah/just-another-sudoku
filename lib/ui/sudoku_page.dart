@@ -4,6 +4,7 @@ import 'package:just_another_sudoku/data/models/board_model.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
 import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:just_another_sudoku/ui/keypad.dart';
+import 'package:just_another_sudoku/ui/option_menu.dart';
 import 'package:just_another_sudoku/ui/sudoku_board.dart';
 import 'package:just_another_sudoku/ui/timer.dart';
 import 'package:just_another_sudoku/ui/toolbar.dart';
@@ -20,45 +21,73 @@ class SudokuPage extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => CellModel()),
         ChangeNotifierProvider(create: (context) => TimeHandler()),
       ],
-      
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: const TimerButton(),
-          actions: const [Menu()],
-        ),
-        body: const SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(height: 24.0),
-                SudokuBoard(),
-                SizedBox(height: 24.0),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Toolbar(),
-                ),
-                SizedBox(height: 24.0),
-                Keypad(),
-                SizedBox(height: 36.0),
-              ],
+      child: Builder(builder: (context) {
+        final timeHandler = Provider.of<TimeHandler>(context, listen: false);
+        final boardModel = Provider.of<BoardModel>(context, listen: false);
+        
+        return Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            title: const TimerButton(),
+            actions: [
+              Builder(
+                builder: (context) {
+                  return Menu(onPressed: () {
+                    Scaffold.of(context).openEndDrawer();
+
+                    if (timeHandler.isRunning) {
+                      timeHandler.stop();
+                      boardModel.toggleHide();
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+          onEndDrawerChanged: (isOpened) {
+            if (!isOpened) {
+              if (!timeHandler.isRunning) {
+                timeHandler.start();
+                boardModel.toggleHide();
+              }
+            }
+          },
+          endDrawer: const Drawer(child: OptionMenu()),
+          body: const SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(height: 24.0),
+                  SudokuBoard(),
+                  SizedBox(height: 24.0),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Toolbar(),
+                  ),
+                  SizedBox(height: 24.0),
+                  Keypad(),
+                  SizedBox(height: 36.0),
+                ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }
 
 class Menu extends StatelessWidget {
-  const Menu({super.key});
+  const Menu({super.key, required this.onPressed});
+
+  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () {},
+      onPressed: onPressed ?? () {},
       icon: const SizedBox(
         height: 36,
         width: 36,

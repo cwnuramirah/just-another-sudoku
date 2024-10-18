@@ -33,10 +33,10 @@ class Keypad extends StatelessWidget {
               style: TextButton.styleFrom(padding: EdgeInsets.zero),
               child: Text(
                 "${i + 1}",
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 36.0,
-                  color: Colors.black,
+                  color: boardModel.noteToggled ? Colors.grey.shade600 : Colors.black,
                 ),
               ),
             ),
