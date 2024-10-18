@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:just_another_sudoku/data/models/board_model.dart';
+import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:provider/provider.dart';
 
 class TimerButton extends StatefulWidget {
@@ -11,109 +12,115 @@ class TimerButton extends StatefulWidget {
   State<TimerButton> createState() => _TimerButtonState();
 }
 
-class _TimerButtonState extends State<TimerButton> {
-  late Stopwatch stopwatch;
-  late Timer t;
-
-  void handleStart() {
-    stopwatch.start();
-  }
-
-  void handleStop() {
-    stopwatch.stop();
-  }
-
-  String returnFormattedText() {
-    var secs = stopwatch.elapsed.inSeconds;
-
-    String seconds = (secs % 60).toString().padLeft(2, "0");
-    String minutes = (secs ~/ 60).toString().padLeft(2, "0");
-
-    return "$minutes:$seconds";
-  }
-
+class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    stopwatch = Stopwatch();
+    WidgetsBinding.instance.addObserver(this);
+  }
 
-    t = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {});
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final timeHandler = Provider.of<TimeHandler>(context, listen: false);
+      timeHandler.start(); // Start the timer when dependencies are set up
     });
+  }
 
-    handleStart();
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
+      final timeHandler = Provider.of<TimeHandler>(context, listen: false);
+      final boardModel = Provider.of<BoardModel>(context, listen: false);
+      if (timeHandler.isRunning) {
+        pauseDialog(context, timeHandler, boardModel);
+      }
+    }
+  }
+
+  Future<void> pauseDialog(
+      BuildContext context, TimeHandler time, BoardModel boardModel) {
+    time.stop();
+    boardModel.toggleHide();
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Center(child: Text('Paused!')),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ExpandedTextButton(
+                onPressed: () {},
+                icon: TablerIcons.adjustments_horizontal,
+                label: 'Options',
+              ),
+              ExpandedTextButton(
+                onPressed: () {},
+                icon: TablerIcons.home,
+                label: 'Return Home',
+              ),
+              ExpandedTextButton(
+                onPressed: () {},
+                icon: TablerIcons.reload,
+                label: 'Restart',
+              ),
+            ],
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: <Widget>[
+            ExpandedTextButton(
+              onPressed: () {
+                boardModel.toggleHide();
+                time.start();
+                Navigator.of(context).pop();
+              },
+              icon: TablerIcons.player_play_filled,
+              label: 'Resume',
+              primary: true,
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final boardModel = Provider.of<BoardModel>(context, listen: false);
 
-    Future<void> pauseDialog() {
-      handleStop();
-
-      boardModel.toggleHide();
-
-      return showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Center(child: Text('Paused!')),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ExpandedTextButton(
-                  onPressed: () {},
-                  icon: TablerIcons.adjustments_horizontal,
-                  label: 'Options',
-                ),
-                ExpandedTextButton(
-                  onPressed: () {},
-                  icon: TablerIcons.home,
-                  label: 'Return Home',
-                ),
-                ExpandedTextButton(
-                  onPressed: () {},
-                  icon: TablerIcons.reload,
-                  label: 'Restart',
-                ),
-              ],
+    return Consumer<TimeHandler>(
+      builder: (context, time, _) {
+        return TextButton.icon(
+          onPressed: () => pauseDialog(context, time, boardModel),
+          icon: SizedBox(
+            width: 20.0,
+            height: 22.0,
+            child: Icon(
+              time.isRunning
+                  ? TablerIcons.player_pause_filled
+                  : TablerIcons.player_play_filled,
+              size: 20.0,
             ),
-            actionsAlignment: MainAxisAlignment.center,
-            actions: <Widget>[
-              ExpandedTextButton(
-                onPressed: () {
-                  boardModel.toggleHide();
-                  handleStart();
-                  Navigator.of(context).pop();
-                },
-                icon: TablerIcons.player_play_filled,
-                label: 'Resume',
-                primary: true,
-              ),
-            ],
-          );
-        },
-      );
-    }
-
-    return TextButton.icon(
-      onPressed: () => pauseDialog(),
-      icon: SizedBox(
-        width: 20.0,
-        height: 22.0,
-        child: Icon(
-          stopwatch.isRunning
-              ? TablerIcons.player_pause_filled
-              : TablerIcons.player_play_filled,
-          size: 20.0,
-        ),
-      ),
-      label: SizedBox(
-		width: 56.0,
-        child: Text(returnFormattedText(),
-            style: const TextStyle(height: 1.2, fontSize: 18.0)),
-      ),
+          ),
+          label: SizedBox(
+            width: 56.0,
+            child: Text(time.getFormattedTime(),
+                style: const TextStyle(height: 1.2, fontSize: 18.0)),
+          ),
+        );
+      },
     );
   }
 }

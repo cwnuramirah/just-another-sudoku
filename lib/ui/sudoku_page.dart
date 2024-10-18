@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:just_another_sudoku/data/models/board_model.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
+import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:just_another_sudoku/ui/keypad.dart';
 import 'package:just_another_sudoku/ui/sudoku_board.dart';
 import 'package:just_another_sudoku/ui/timer.dart';
@@ -16,7 +17,8 @@ class SudokuPage extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => BoardModel()),
-        ChangeNotifierProvider(create: (context) => CellModel())
+        ChangeNotifierProvider(create: (context) => CellModel()),
+        ChangeNotifierProvider(create: (context) => TimeHandler()),
       ],
       
       child: Scaffold(
