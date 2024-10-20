@@ -7,7 +7,7 @@ class Keypad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boardModel = Provider.of<BoardModel>(context, listen: false);
+    final boardModel = Provider.of<BoardModel>(context);
     final selectedRow =
         context.select<BoardModel, int>((model) => model.selectedRow);
     final selectedColumn =

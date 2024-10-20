@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:just_another_sudoku/ui/cell.dart';
+import 'package:just_another_sudoku/ui/game/cell.dart';
 
-class SudokuBoard extends StatefulWidget {
+class SudokuBoard extends StatelessWidget {
   const SudokuBoard({super.key});
 
   @override
-  State<SudokuBoard> createState() => _SudokuBoardState();
-}
-
-class _SudokuBoardState extends State<SudokuBoard> {
-
-  @override
   Widget build(BuildContext context) {
-
     return AspectRatio(
       aspectRatio: 0.98,
       child: Container(

@@ -114,6 +114,7 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
       builder: (context, time, _) {
         return TextButton.icon(
           onPressed: () => pauseDialog(context, time, boardModel),
+          style: TextButton.styleFrom(foregroundColor: Colors.black),
           icon: SizedBox(
             width: 20.0,
             height: 22.0,

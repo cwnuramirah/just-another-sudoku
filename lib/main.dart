@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/models/color_theme.dart';
-import 'package:just_another_sudoku/ui/color_contants.dart';
+import 'package:just_another_sudoku/theme/color_contants.dart';
 // import 'package:just_another_sudoku/ui/home_page.dart';
-import 'package:just_another_sudoku/ui/sudoku_page.dart';
+import 'package:just_another_sudoku/ui/game/sudoku_page.dart';
 import 'package:provider/provider.dart';
 
 void main() {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:just_another_sudoku/ui/color_contants.dart';
+import 'package:just_another_sudoku/theme/color_contants.dart';
 
 class ColorTheme with ChangeNotifier {
   late List<Color> _color;

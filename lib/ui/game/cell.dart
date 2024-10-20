@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/models/board_model.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
 import 'package:just_another_sudoku/data/models/color_theme.dart';
-import 'package:just_another_sudoku/ui/cell_style.dart';
+import 'package:just_another_sudoku/theme/cell_style.dart';
 import 'package:provider/provider.dart';
 
 class Cell extends StatelessWidget {
