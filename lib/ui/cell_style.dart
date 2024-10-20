@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
+import 'package:just_another_sudoku/data/models/color_theme.dart';
 
 class CellStyle {
+  final ColorTheme color;
   final int column;
   final int row;
   final CellModel cell;
@@ -9,6 +11,7 @@ class CellStyle {
   final int selectedRow;
 
   CellStyle({
+    required this.color,
     required this.column,
     required this.row,
     required this.cell,
@@ -17,23 +20,20 @@ class CellStyle {
   });
 
   Color getBackgroundColor() {
-    Color backgroundColor;
+    Color backgroundColor = Colors.white;
     bool isInSameColumn = column == selectedColumn;
     bool isInSameRow = row == selectedRow;
-    bool isInSameBox = (column ~/ 3 == selectedColumn ~/ 3) &&
-        (row ~/ 3 == selectedRow ~/ 3);
+    bool isInSameBox =
+        (column ~/ 3 == selectedColumn ~/ 3) && (row ~/ 3 == selectedRow ~/ 3);
 
+    // HIGHLIGHT CELL
     if (isInSameColumn || isInSameRow || isInSameBox) {
-      // HIGHLIGHT CELL
-      backgroundColor = Colors.blue.shade50;
-    } else {
-      // IDLE CELL
-      backgroundColor = Colors.white;
+      backgroundColor = color.highlight;
     }
 
     // SELECTED CELL
     if (column == selectedColumn && row == selectedRow) {
-      backgroundColor = Colors.blue.shade200;
+      backgroundColor = color.selected;
     }
 
     // ERROR CELL
@@ -48,7 +48,7 @@ class CellStyle {
     Color textColor = Colors.black;
 
     if (!cell.isFixed) {
-      textColor = Colors.blue.shade700;
+      textColor = color.text;
     }
 
     if (cell.isError && !cell.isFixed) {
