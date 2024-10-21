@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
 import 'package:just_another_sudoku/data/models/color_theme.dart';
+import 'package:just_another_sudoku/data/models/settings_model.dart';
 
 class CellStyle {
+  final SettingsModel settings;
   final ColorTheme color;
   final int column;
   final int row;
   final CellModel cell;
+  final int? selectedValue;
   final int selectedColumn;
   final int selectedRow;
 
   CellStyle({
+    required this.settings,
     required this.color,
     required this.column,
     required this.row,
     required this.cell,
+    this.selectedValue,
     required this.selectedColumn,
     required this.selectedRow,
   });
@@ -31,14 +36,25 @@ class CellStyle {
       backgroundColor = color.highlight;
     }
 
+    // HIGHLIGHT SAME NUMBER
+    if (settings.highlightSameNumber) {
+      if (selectedValue != 0 && selectedValue != null) {
+        if (cell.value == selectedValue) {
+          backgroundColor = color.highlightSameNumber;
+        }
+      }
+    }
+
     // SELECTED CELL
     if (column == selectedColumn && row == selectedRow) {
       backgroundColor = color.selected;
     }
 
     // ERROR CELL
-    if (cell.isError) {
-      backgroundColor = Colors.red.shade100;
+    if (settings.highlightViolation) {
+      if (cell.isError) {
+        backgroundColor = Colors.red.shade100;
+      }
     }
 
     return backgroundColor;
@@ -51,8 +67,10 @@ class CellStyle {
       textColor = color.text;
     }
 
-    if (cell.isError && !cell.isFixed) {
-      textColor = Colors.red;
+    if (settings.highlightViolation) {
+      if (cell.isError && !cell.isFixed) {
+        textColor = Colors.red;
+      }
     }
 
     return textColor;

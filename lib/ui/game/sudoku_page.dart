@@ -52,7 +52,7 @@ class SudokuPage extends StatelessWidget {
               }
             }
           },
-          endDrawer: const Drawer(child: OptionMenu()),
+          endDrawer: const Drawer(child: SafeArea(child: OptionMenu())),
           body: const SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:just_another_sudoku/data/models/color_theme.dart';
+import 'package:just_another_sudoku/data/models/settings_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,7 @@ class OptionMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorContext = context.watch<ColorTheme>();
+    final settings = context.watch<SettingsModel>();
     List<List<Color>> colors = colorContext.colorList;
 
     return Column(
@@ -43,17 +45,38 @@ class OptionMenu extends StatelessWidget {
             ],
           ),
         ),
-        CupertinoListTile(
+        ListTile(
           title: const Text("Highlight same number"),
-          trailing: CupertinoSwitch(value: false, onChanged: (value) {}),
+          trailing: CupertinoSwitch(
+            value: settings.highlightSameNumber,
+            onChanged: (value) => settings.switchHighlightSameNumber(value),
+          ),
         ),
-        CupertinoListTile(
+        ListTile(
           title: const Text("Highlight violation instantly"),
-          trailing: CupertinoSwitch(value: true, onChanged: (value) {}),
+          trailing: CupertinoSwitch(
+            value: settings.highlightViolation,
+            onChanged: (value) {
+              settings.switchHighlightViolation(value);
+              if (value == false) {
+                settings.switchCompareToSolution(false);
+              }
+            },
+          ),
         ),
-        CupertinoListTile(
-          title: const Text("Compare to final solution"),
-          trailing: CupertinoSwitch(value: false, onChanged: (value) {}),
+        ListTile(
+          title: Text(
+            "Compare to final solution",
+            style: settings.highlightViolation
+                ? const TextStyle()
+                : const TextStyle(color: Colors.grey),
+          ),
+          trailing: CupertinoSwitch(
+            value: settings.compareToSolution,
+            onChanged: settings.highlightViolation
+                ? (value) => settings.switchCompareToSolution(value)
+                : null,
+          ),
         ),
       ],
     );

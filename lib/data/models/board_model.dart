@@ -16,6 +16,7 @@ class BoardModel with ChangeNotifier {
   ];
 
   late List<List<CellModel>> _board;
+  int _selectedValue = 0;
   int _selectedRow = 0;
   int _selectedColumn = 0;
   bool _noteToggled = false;
@@ -39,6 +40,7 @@ class BoardModel with ChangeNotifier {
 
   List<List<CellModel>> get board => _board;
 
+  int get selectedValue => _selectedValue;
   int get selectedRow => _selectedRow;
   int get selectedColumn => _selectedColumn;
   bool get noteToggled => _noteToggled;
@@ -52,12 +54,14 @@ class BoardModel with ChangeNotifier {
   void selectCell(int column, int row) {
     _selectedRow = row;
     _selectedColumn = column;
+    _selectedValue = _board[_selectedColumn][_selectedRow].value;
     notifyListeners();
   }
 
   void updateCell(int value) {
     int col = _selectedColumn;
     int row = _selectedRow;
+    _selectedValue = value;
 
     if (value < 0 || value > 9) return; // Ignore invalid values
     if (!_board[col][row].isFixed) {

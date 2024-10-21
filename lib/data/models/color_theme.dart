@@ -25,7 +25,8 @@ class ColorTheme with ChangeNotifier {
       ];
   int get colorIndex => _colorIndex;
   List<Color> get colorSwatch => _color;
-  Color get highlight => _color[2];
+  Color get highlight => _color[3];
+  Color get highlightSameNumber => _color[2];
   Color get selected => _color[1];
   Color get text => _color[0];
 }
