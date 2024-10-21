@@ -9,7 +9,7 @@ class Toolbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final boardModel = Provider.of<BoardModel>(context);
-    
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -19,12 +19,15 @@ class Toolbar extends StatelessWidget {
           badge: const Text('3'),
         ),
         CircleIconButton(
-          onPressed: () {},
+          onPressed: () {
+            boardModel.undoMove();
+          },
           icon: TablerIcons.arrow_back_up,
         ),
         CircleIconButton(
           onPressed: () {
-            boardModel.updateCell(0);
+            boardModel.addMove(
+                boardModel.selectedColumn, boardModel.selectedRow, 0);
             boardModel.clearNotes();
           },
           icon: TablerIcons.eraser,

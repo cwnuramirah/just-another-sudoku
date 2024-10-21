@@ -24,7 +24,7 @@ class Keypad extends StatelessWidget {
                 if (!boardModel.board[selectedColumn][selectedRow].isFixed) {
                   if (!boardModel.noteToggled) {
                     boardModel.clearNotes();
-                    boardModel.updateCell(i + 1);
+                    boardModel.addMove(selectedColumn, selectedRow, i+1);
                   } else {
                     boardModel.addNote(i + 1);
                   }

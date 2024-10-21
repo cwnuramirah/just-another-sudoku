@@ -16,14 +16,17 @@ class BoardModel with ChangeNotifier {
   ];
 
   late List<List<CellModel>> _board;
+  late List<Move> _history;
+
   int _selectedValue = 0;
   int _selectedRow = 0;
   int _selectedColumn = 0;
   bool _noteToggled = false;
-  bool _boardHidden = false;
+  bool _isBoardHidden = false;
 
   BoardModel() {
     _board = _generateBoard();
+    _history = [];
   }
 
   List<List<CellModel>> _generateBoard() {
@@ -32,45 +35,45 @@ class BoardModel with ChangeNotifier {
       (column) => List.generate(
         9,
         (row) => CellModel(
-            value: _initBoard[column][row],
-            isFixed: _initBoard[column][row] != 0),
+          value: _initBoard[column][row],
+          isFixed: _initBoard[column][row] != 0,
+        ),
       ),
     );
   }
 
   List<List<CellModel>> get board => _board;
-
   int get selectedValue => _selectedValue;
   int get selectedRow => _selectedRow;
   int get selectedColumn => _selectedColumn;
   bool get noteToggled => _noteToggled;
-  bool get boardHidden => _boardHidden;
+  bool get boardHidden => _isBoardHidden;
 
   void toggleHide() {
-    _boardHidden = !_boardHidden;
+    _isBoardHidden = !_isBoardHidden;
     notifyListeners();
   }
 
   void selectCell(int column, int row) {
-    _selectedRow = row;
     _selectedColumn = column;
+    _selectedRow = row;
     _selectedValue = _board[_selectedColumn][_selectedRow].value;
     notifyListeners();
   }
 
-  void updateCell(int value) {
-    int col = _selectedColumn;
-    int row = _selectedRow;
+  void updateCell({int? col, int? row, required int value}) {
+    int targetCol = col ?? _selectedColumn;
+    int targetRow = row ?? _selectedRow;
     _selectedValue = value;
 
-    if (value < 0 || value > 9) return; // Ignore invalid values
-    if (!_board[col][row].isFixed) {
-      _board[col][row].value = value;
+    // Ignore invalid values and skip for fixed cell
+    if (value < 0 || value > 9 || _board[targetCol][targetRow].isFixed) return;
 
-      SudokuErrorHandler().handleCellError(_board, col, row, value);
+    _board[targetCol][targetRow].value = value;
 
-      notifyListeners();
-    }
+    SudokuErrorHandler().handleCellError(_board, targetCol, targetRow, value);
+
+    notifyListeners();
   }
 
   void toggleNote() {
@@ -79,21 +82,20 @@ class BoardModel with ChangeNotifier {
   }
 
   void addNote(int number) {
-    if (number >= 1 && number <= 9) {
-      if (_board[_selectedColumn][_selectedRow].value != 0) {
-        updateCell(0);
-      }
-      if (_board[_selectedColumn][_selectedRow].notes.contains(number)) {
-        removeNote(number);
-      } else {
-        _board[_selectedColumn][_selectedRow].notes.add(number);
-      }
-    }
-    notifyListeners();
-  }
+    if (number < 1 || number > 9) return; // Ignore invalid values
 
-  void removeNote(int number) {
-    _board[_selectedColumn][_selectedRow].notes.remove(number);
+    CellModel cell = _board[_selectedColumn][_selectedRow];
+
+    if (cell.value != 0) {
+      updateCell(value: 0);
+    }
+
+    if (cell.notes.contains(number)) {
+      cell.notes.remove(number);
+    } else {
+      cell.notes.add(number);
+    }
+
     notifyListeners();
   }
 
@@ -102,9 +104,47 @@ class BoardModel with ChangeNotifier {
     notifyListeners();
   }
 
+  void addMove(int col, int row, int newValue) {
+    _history.add(
+      Move(
+        column: col,
+        row: row,
+        prevValue: _board[col][row].value,
+        newValue: newValue,
+      ),
+    );
+    updateCell(value: newValue);
+  }
+
+  void undoMove() {
+    if (_history.isEmpty) return;
+    final latestMove = _history.removeLast();
+
+    selectCell(latestMove.column, latestMove.row);
+    updateCell(
+      col: latestMove.column,
+      row: latestMove.row,
+      value: latestMove.prevValue,
+    );
+  }
+
   // Reset the board to the initial state
   void resetBoard() {
     _board = _generateBoard();
     notifyListeners();
   }
+}
+
+class Move {
+  int column;
+  int row;
+  int prevValue = 0;
+  int newValue;
+
+  Move({
+    required this.column,
+    required this.row,
+    this.prevValue = 0,
+    required this.newValue,
+  });
 }
