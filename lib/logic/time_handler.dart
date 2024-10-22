@@ -10,6 +10,7 @@ class TimeHandler extends ChangeNotifier {
   }
 
   void start() {
+    if (stopwatch.isRunning) return;
     stopwatch.start();
     startTimer();
     notifyListeners();
@@ -41,8 +42,17 @@ class TimeHandler extends ChangeNotifier {
   }
 
   void cancelTimer() {
-    t.cancel();
+    if (t.isActive) {
+      t.cancel();
+    }
   }
 
   bool get isRunning => stopwatch.isRunning;
+
+  @override
+  void dispose() {
+    stop();
+    cancelTimer();
+    super.dispose();
+  }
 }

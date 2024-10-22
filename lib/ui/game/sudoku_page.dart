@@ -10,8 +10,14 @@ import 'package:just_another_sudoku/ui/game/timer.dart';
 import 'package:just_another_sudoku/ui/game/toolbar.dart';
 import 'package:provider/provider.dart';
 
-class SudokuPage extends StatelessWidget {
+class SudokuPage extends StatefulWidget {
   const SudokuPage({super.key});
+
+  @override
+  State<SudokuPage> createState() => _SudokuPageState();
+}
+
+class _SudokuPageState extends State<SudokuPage> {
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +30,7 @@ class SudokuPage extends StatelessWidget {
       child: Builder(builder: (context) {
         final timeHandler = context.read<TimeHandler>();
         final boardModel = context.read<BoardModel>();
-        
+
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
@@ -35,7 +41,7 @@ class SudokuPage extends StatelessWidget {
                   return Menu(onPressed: () {
                     Scaffold.of(context).openEndDrawer();
 
-                    if (timeHandler.isRunning) {
+                    if (timeHandler.isRunning && mounted) {
                       timeHandler.stop();
                       boardModel.toggleHide();
                     }
@@ -45,7 +51,7 @@ class SudokuPage extends StatelessWidget {
             ],
           ),
           onEndDrawerChanged: (isOpened) {
-            if (!isOpened) {
+            if (!isOpened && mounted) {
               if (!timeHandler.isRunning) {
                 timeHandler.start();
                 boardModel.toggleHide();
