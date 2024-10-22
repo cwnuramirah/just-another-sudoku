@@ -7,25 +7,59 @@ import 'package:flutter/material.dart';
 class OptionMenu extends StatelessWidget {
   const OptionMenu({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final colorContext = context.watch<ColorTheme>();
-    final settings = context.watch<SettingsModel>();
-    List<List<Color>> colors = colorContext.colorList;
+  String _getCurrentColorThemeName({required int colorIndex}) {
+    switch (colorIndex) {
+      case 0:
+        return "Blue";
+      case 1:
+        return "Purple";
+      case 2:
+        return "Green";
+      case 3:
+        return "Yellow";
+      default:
+        return "Unknown";
+    }
+  }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+  Widget _buildColorThemeSelector({
+    required BuildContext context,
+    required ColorTheme colorContext,
+  }) {
+    final colors = colorContext.colorList;
+
+    return CupertinoListSection.insetGrouped(
+      backgroundColor: Colors.grey.shade100,
       children: [
-        ListTile(
-          title: const Text("Color Theme"),
-          subtitle: Row(
+        ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 24.0),
+          shape: const Border(),
+          title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              for (int i = 0; i < colors.length; i++)
-                Container(
-                  height: 30.0,
-                  width: 30.0,
-                  decoration: BoxDecoration(
+              Text(
+                "Color Theme",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text(
+                _getCurrentColorThemeName(colorIndex: colorContext.colorIndex),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(color: colorContext.text),
+              ),
+            ],
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24.0, 0, 24.0, 24.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(colors.length, (i) {
+                  return Container(
+                    height: 40.0,
+                    width: 40.0,
+                    decoration: BoxDecoration(
                       color: colors[i][1],
                       borderRadius: BorderRadius.circular(100),
                       border: Border.all(
@@ -33,50 +67,88 @@ class OptionMenu extends StatelessWidget {
                             ? colors[i][0]
                             : Colors.transparent,
                         width: 2.0,
-                      )),
-                  child: IconButton(
-                    icon: const SizedBox.shrink(),
-                    highlightColor: colors[i][0],
-                    onPressed: () {
-                      colorContext.changeColorTheme(colors[i], i);
-                    },
-                  ),
-                )
-            ],
-          ),
+                      ),
+                    ),
+                    child: IconButton(
+                      icon: const SizedBox.shrink(),
+                      highlightColor: colors[i][0],
+                      onPressed: () => colorContext.changeColorTheme(colors[i], i),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
         ),
-        ListTile(
-          title: const Text("Highlight same number"),
-          trailing: CupertinoSwitch(
-            value: settings.highlightSameNumber,
-            onChanged: (value) => settings.switchHighlightSameNumber(value),
-          ),
+      ],
+    );
+  }
+
+  Widget _buildSwitchSetting({
+    required BuildContext context,
+    required String title,
+    required bool value,
+    required Function(bool) onChanged,
+    bool enabled = true,
+  }) {
+    return CupertinoListTile.notched(
+      title: Text(
+        title,
+        style: enabled
+            ? Theme.of(context).textTheme.titleMedium
+            : Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.grey),
+      ),
+      trailing: CupertinoSwitch(
+        value: value,
+        onChanged: enabled ? onChanged : null,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorContext = context.watch<ColorTheme>();
+    final settings = context.watch<SettingsModel>();
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildColorThemeSelector(context: context, colorContext: colorContext),
+
+        CupertinoListSection.insetGrouped(
+          backgroundColor: Colors.grey.shade100,
+          children: [
+            _buildSwitchSetting(
+              context: context,
+              title: "Highlight same number",
+              value: settings.highlightSameNumber,
+              onChanged: settings.switchHighlightSameNumber,
+            ),
+          ],
         ),
-        ListTile(
-          title: const Text("Highlight violation instantly"),
-          trailing: CupertinoSwitch(
-            value: settings.highlightViolation,
-            onChanged: (value) {
-              settings.switchHighlightViolation(value);
-              if (value == false) {
-                settings.switchCompareToSolution(false);
-              }
-            },
-          ),
-        ),
-        ListTile(
-          title: Text(
-            "Compare to final solution",
-            style: settings.highlightViolation
-                ? const TextStyle()
-                : const TextStyle(color: Colors.grey),
-          ),
-          trailing: CupertinoSwitch(
-            value: settings.compareToSolution,
-            onChanged: settings.highlightViolation
-                ? (value) => settings.switchCompareToSolution(value)
-                : null,
-          ),
+
+        CupertinoListSection.insetGrouped(
+          backgroundColor: Colors.grey.shade100,
+          children: [
+            _buildSwitchSetting(
+              context: context,
+              title: "Highlight violation instantly",
+              value: settings.highlightViolation,
+              onChanged: (value) {
+                settings.switchHighlightViolation(value);
+                if (!value) {
+                  settings.switchCompareToSolution(false);
+                }
+              },
+            ),
+            _buildSwitchSetting(
+              context: context,
+              title: "Compare to final solution",
+              value: settings.compareToSolution,
+              onChanged: settings.switchCompareToSolution,
+              enabled: settings.highlightViolation,
+            ),
+          ],
         ),
       ],
     );

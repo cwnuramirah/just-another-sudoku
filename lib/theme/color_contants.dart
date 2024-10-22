@@ -15,17 +15,17 @@ abstract class ColorConstants {
     Colors.purple.shade50,
   ];
 
-  static List<Color> yellow = [
-    Colors.yellow.shade800,
-    Colors.yellow.shade200,
-    Colors.yellow.shade100,
-    Colors.yellow.shade50,
-  ];
-  
   static List<Color> green = [
     Colors.green.shade800,
     Colors.green.shade200,
     Colors.green.shade100,
     Colors.green.shade50,
+  ];
+
+  static List<Color> yellow = [
+    Colors.yellow.shade800,
+    Colors.yellow.shade200,
+    Colors.yellow.shade100,
+    Colors.yellow.shade50,
   ];
 }

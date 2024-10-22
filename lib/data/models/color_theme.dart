@@ -19,8 +19,8 @@ class ColorTheme with ChangeNotifier {
 
   List<List<Color>> get colorList => [
         ColorConstants.blue,
-        ColorConstants.green,
         ColorConstants.purple,
+        ColorConstants.green,
         ColorConstants.yellow,
       ];
   int get colorIndex => _colorIndex;
