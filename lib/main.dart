@@ -20,7 +20,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => ColorTheme(initialColor: preferredColor, colorIndex: 2),
+          create: (context) =>
+              ColorTheme(initialColor: preferredColor, colorIndex: 2),
         ),
         ChangeNotifierProvider(create: (context) => SettingsModel()),
       ],
@@ -31,13 +32,11 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             fontFamily: 'WorkSans',
             useMaterial3: true,
-            listTileTheme: const ListTileThemeData(
-                titleTextStyle: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                    fontFamily: 'WorkSans',
-                    height: 1.1,
-                    fontSize: 15.0)),
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: <TargetPlatform, PageTransitionsBuilder>{
+                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+              },
+            ),
             colorScheme: ColorScheme(
               brightness: Brightness.light,
               primary: colorTheme.colorSwatch[0],

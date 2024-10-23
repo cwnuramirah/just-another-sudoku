@@ -16,6 +16,7 @@ class BoardModel with ChangeNotifier {
     [8, 5, 0, 9, 1, 0, 4, 0, 0],
   ];
 
+  late String _mode;
   late List<List<CellModel>> _board;
   late List<Move> _history;
 
@@ -25,18 +26,21 @@ class BoardModel with ChangeNotifier {
   bool _noteToggled = false;
   bool _isBoardHidden = false;
 
-  BoardModel() {
+  BoardModel(String? mode) {
+    _mode = mode ?? "Easy";
     _board = _generateBoard();
     _history = [];
   }
 
   List<List<CellModel>> _generateBoard() {
-    List<List<int>> easyPuzzle = generatePuzzle(minClues: 40); // Easy: 36-40 clues
-    // List<List<int>> normalPuzzle = generatePuzzle(minClues: 34);  // Normal: 30-35 clues
-    // List<List<int>> hardPuzzle = generatePuzzle(minClues: 28);  // Hard: 25-29 clues
-    List<List<int>> puzzle = easyPuzzle;
+    List<List<int>> puzzle = [];
 
-    for (var row in easyPuzzle) print(row);
+    switch (_mode) {
+      case "Easy" : puzzle = generatePuzzle(minClues: 46); // Easy: 36-40 clues
+      case "Normal" : puzzle = generatePuzzle(minClues: 34);  // Normal: 30-35 clues
+      case "Hard" : puzzle = generatePuzzle(minClues: 28);  // Hard: 25-29 clues
+      default: puzzle = _initBoard;
+    }
 
     return List.generate(
       9,

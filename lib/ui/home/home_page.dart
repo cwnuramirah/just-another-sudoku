@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:just_another_sudoku/ui/expanded_text_button.dart';
-import 'package:just_another_sudoku/ui/game/sudoku_page.dart';
+import 'package:just_another_sudoku/ui/home/game_mode_list.dart';
 import 'package:just_another_sudoku/ui/home/settings_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -19,7 +19,10 @@ class HomePage extends StatelessWidget {
               children: [
                 Text(
                   "just another sudoku.",
-                  style: Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w600),
+                  style: Theme.of(context)
+                      .textTheme
+                      .displayMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 16.0),
                 ExpandedTextButton(
@@ -28,7 +31,8 @@ class HomePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SettingsPage()),
+                      MaterialPageRoute(
+                          builder: (context) => const SettingsPage()),
                     );
                   },
                 ),
@@ -39,13 +43,12 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 ExpandedTextButton(
-                  label: "New Game",
                   primary: true,
+                  label: "New Game",
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SudokuPage()),
-                    );
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) => const GameModeList());
                   },
                 ),
               ],

@@ -11,19 +11,20 @@ import 'package:just_another_sudoku/ui/game/toolbar.dart';
 import 'package:provider/provider.dart';
 
 class SudokuPage extends StatefulWidget {
-  const SudokuPage({super.key});
+  const SudokuPage({super.key, required this.mode});
+
+  final String mode;
 
   @override
   State<SudokuPage> createState() => _SudokuPageState();
 }
 
 class _SudokuPageState extends State<SudokuPage> {
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => BoardModel()),
+        ChangeNotifierProvider(create: (context) => BoardModel(widget.mode)),
         ChangeNotifierProvider(create: (context) => CellModel()),
         ChangeNotifierProvider(create: (context) => TimeHandler()),
       ],
@@ -35,6 +36,16 @@ class _SudokuPageState extends State<SudokuPage> {
           appBar: AppBar(
             centerTitle: true,
             title: const TimerButton(),
+            leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+              icon: const SizedBox(
+                height: 36,
+                width: 36,
+                child: Icon(TablerIcons.chevron_left),
+              ),
+            ),
             actions: [
               Builder(
                 builder: (context) {
