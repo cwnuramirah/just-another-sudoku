@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
+import 'package:just_another_sudoku/logic/generator.dart';
 import 'package:just_another_sudoku/logic/sudoku_error_handler.dart';
 
 class BoardModel with ChangeNotifier {
@@ -30,13 +31,20 @@ class BoardModel with ChangeNotifier {
   }
 
   List<List<CellModel>> _generateBoard() {
+    List<List<int>> easyPuzzle = generatePuzzle(minClues: 40); // Easy: 36-40 clues
+    // List<List<int>> normalPuzzle = generatePuzzle(minClues: 34);  // Normal: 30-35 clues
+    // List<List<int>> hardPuzzle = generatePuzzle(minClues: 28);  // Hard: 25-29 clues
+    List<List<int>> puzzle = easyPuzzle;
+
+    for (var row in easyPuzzle) print(row);
+
     return List.generate(
       9,
       (column) => List.generate(
         9,
         (row) => CellModel(
-          value: _initBoard[column][row],
-          isFixed: _initBoard[column][row] != 0,
+          value: puzzle[column][row],
+          isFixed: puzzle[column][row] != 0,
         ),
       ),
     );
