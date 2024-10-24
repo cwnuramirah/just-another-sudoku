@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:just_another_sudoku/ui/expanded_text_button.dart';
+import 'package:just_another_sudoku/ui/common/expanded_text_button.dart';
 import 'package:just_another_sudoku/ui/game/sudoku_page.dart';
 
 class GameModeList extends StatelessWidget {

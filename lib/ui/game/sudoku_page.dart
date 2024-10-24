@@ -3,8 +3,9 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:just_another_sudoku/data/models/board_model.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
 import 'package:just_another_sudoku/logic/time_handler.dart';
+import 'package:just_another_sudoku/ui/common/chevron_back_button.dart';
 import 'package:just_another_sudoku/ui/game/keypad.dart';
-import 'package:just_another_sudoku/ui/option_menu.dart';
+import 'package:just_another_sudoku/ui/common/option_menu.dart';
 import 'package:just_another_sudoku/ui/game/sudoku_board.dart';
 import 'package:just_another_sudoku/ui/game/timer.dart';
 import 'package:just_another_sudoku/ui/game/toolbar.dart';
@@ -36,15 +37,10 @@ class _SudokuPageState extends State<SudokuPage> {
           appBar: AppBar(
             centerTitle: true,
             title: const TimerButton(),
-            leading: IconButton(
+            leading: ChevronBackButton(
               onPressed: () {
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
-              icon: const SizedBox(
-                height: 36,
-                width: 36,
-                child: Icon(TablerIcons.chevron_left),
-              ),
             ),
             actions: [
               Builder(

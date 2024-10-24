@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:just_another_sudoku/ui/option_menu.dart';
+import 'package:just_another_sudoku/ui/common/chevron_back_button.dart';
+import 'package:just_another_sudoku/ui/common/option_menu.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -13,6 +14,7 @@ class SettingsPage extends StatelessWidget {
           "Settings",
           style: Theme.of(context).textTheme.titleMedium,
         ),
+        leading: const ChevronBackButton(),
       ),
       body: const OptionMenu(),
     );

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:just_another_sudoku/ui/expanded_text_button.dart';
+import 'package:just_another_sudoku/ui/common/expanded_text_button.dart';
 import 'package:just_another_sudoku/ui/home/game_mode_list.dart';
 import 'package:just_another_sudoku/ui/home/settings_page.dart';
+import 'package:just_another_sudoku/ui/home/statistics_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -39,7 +40,13 @@ class HomePage extends StatelessWidget {
                 ExpandedTextButton(
                   icon: TablerIcons.chart_bar,
                   label: "Statistics",
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const StatisticsPage()),
+                    );
+                  },
                 ),
                 const SizedBox(height: 16.0),
                 ExpandedTextButton(

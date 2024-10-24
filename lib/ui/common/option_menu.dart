@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:just_another_sudoku/data/models/color_theme.dart';
 import 'package:just_another_sudoku/data/models/settings_model.dart';
+import 'package:just_another_sudoku/ui/common/styled_list.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -28,8 +29,8 @@ class OptionMenu extends StatelessWidget {
   }) {
     final colors = colorContext.colorList;
 
-    return CupertinoListSection.insetGrouped(
-      backgroundColor: Colors.grey.shade100,
+    return StyledListSection(
+      context: context,
       children: [
         ExpansionTile(
           tilePadding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -72,7 +73,8 @@ class OptionMenu extends StatelessWidget {
                     child: IconButton(
                       icon: const SizedBox.shrink(),
                       highlightColor: colors[i][0],
-                      onPressed: () => colorContext.changeColorTheme(colors[i], i),
+                      onPressed: () =>
+                          colorContext.changeColorTheme(colors[i], i),
                     ),
                   );
                 }),
@@ -91,13 +93,10 @@ class OptionMenu extends StatelessWidget {
     required Function(bool) onChanged,
     bool enabled = true,
   }) {
-    return CupertinoListTile.notched(
-      title: Text(
-        title,
-        style: enabled
-            ? Theme.of(context).textTheme.titleMedium
-            : Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.grey),
-      ),
+    return StyledList(
+      context: context,
+      title: title,
+      enabled: enabled,
       trailing: CupertinoSwitch(
         value: value,
         onChanged: enabled ? onChanged : null,
@@ -114,9 +113,8 @@ class OptionMenu extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildColorThemeSelector(context: context, colorContext: colorContext),
-
-        CupertinoListSection.insetGrouped(
-          backgroundColor: Colors.grey.shade100,
+        StyledListSection(
+          context: context,
           children: [
             _buildSwitchSetting(
               context: context,
@@ -126,9 +124,8 @@ class OptionMenu extends StatelessWidget {
             ),
           ],
         ),
-
-        CupertinoListSection.insetGrouped(
-          backgroundColor: Colors.grey.shade100,
+        StyledListSection(
+          context: context,
           children: [
             _buildSwitchSetting(
               context: context,
