@@ -4,6 +4,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:just_another_sudoku/data/models/board_model.dart';
 import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:just_another_sudoku/ui/common/expanded_text_button.dart';
+import 'package:just_another_sudoku/ui/game/settings_modal.dart';
 import 'package:provider/provider.dart';
 
 class TimerButton extends StatefulWidget {
@@ -63,7 +64,10 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ExpandedTextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  showSettingsModal(context, time, boardModel);
+                },
                 icon: TablerIcons.adjustments_horizontal,
                 label: 'Options',
               ),

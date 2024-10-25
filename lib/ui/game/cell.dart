@@ -12,7 +12,7 @@ class Cell extends StatelessWidget {
     required this.column,
     required this.row,
   });
-
+  
   final int column;
   final int row;
 
@@ -41,6 +41,7 @@ class Cell extends StatelessWidget {
           );
 
           return GestureDetector(
+            key: key,
             onTap: () {
               boardModel.selectCell(column, row);
             },

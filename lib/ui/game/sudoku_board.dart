@@ -15,7 +15,7 @@ class SudokuBoard extends StatelessWidget {
             border: Border.all(width: 1.6, color: Colors.black)),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16.0),
-		  clipBehavior: Clip.hardEdge,
+          clipBehavior: Clip.hardEdge,
           child: Column(
             children: [
               for (int col = 0; col < 9; col++)

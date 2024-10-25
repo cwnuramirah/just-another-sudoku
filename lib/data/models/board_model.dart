@@ -4,17 +4,17 @@ import 'package:just_another_sudoku/logic/generator.dart';
 import 'package:just_another_sudoku/logic/sudoku_error_handler.dart';
 
 class BoardModel with ChangeNotifier {
-  final List<List<int>> _initBoard = [
-    [0, 0, 3, 1, 2, 4, 0, 0, 7],
-    [0, 0, 1, 6, 3, 9, 8, 4, 0],
-    [9, 4, 6, 0, 8, 0, 0, 1, 3],
-    [0, 2, 5, 3, 6, 1, 9, 0, 0],
-    [4, 0, 0, 0, 9, 2, 3, 5, 0],
-    [0, 6, 9, 4, 5, 0, 7, 2, 0],
-    [6, 9, 0, 2, 0, 0, 0, 3, 0],
-    [1, 0, 2, 8, 4, 0, 5, 0, 9],
-    [8, 5, 0, 9, 1, 0, 4, 0, 0],
-  ];
+  // final List<List<int>> _initBoard = [
+  //   [0, 0, 3, 1, 2, 4, 0, 0, 7],
+  //   [0, 0, 1, 6, 3, 9, 8, 4, 0],
+  //   [9, 4, 6, 0, 8, 0, 0, 1, 3],
+  //   [0, 2, 5, 3, 6, 1, 9, 0, 0],
+  //   [4, 0, 0, 0, 9, 2, 3, 5, 0],
+  //   [0, 6, 9, 4, 5, 0, 7, 2, 0],
+  //   [6, 9, 0, 2, 0, 0, 0, 3, 0],
+  //   [1, 0, 2, 8, 4, 0, 5, 0, 9],
+  //   [8, 5, 0, 9, 1, 0, 4, 0, 0],
+  // ];
 
   late String _mode;
   late List<List<CellModel>> _board;
@@ -36,10 +36,12 @@ class BoardModel with ChangeNotifier {
     List<List<int>> puzzle = [];
 
     switch (_mode) {
-      case "Easy" : puzzle = generatePuzzle(minClues: 46); // Easy: 36-40 clues
-      case "Normal" : puzzle = generatePuzzle(minClues: 34);  // Normal: 30-35 clues
-      case "Hard" : puzzle = generatePuzzle(minClues: 28);  // Hard: 25-29 clues
-      default: puzzle = _initBoard;
+      case "Easy":
+        puzzle = generatePuzzle(minClues: 46); // Easy: 36-40 clues
+      case "Normal":
+        puzzle = generatePuzzle(minClues: 34); // Normal: 30-35 clues
+      case "Hard":
+        puzzle = generatePuzzle(minClues: 28); // Hard: 25-29 clues
     }
 
     return List.generate(
@@ -142,7 +144,21 @@ class BoardModel with ChangeNotifier {
 
   // Reset the board to the initial state
   void resetBoard() {
-    _board = _generateBoard();
+    for (int row = 0; row < 9; row++) {
+      for (int col = 0; col < 9; col++) {
+        if (!_board[row][col].isFixed) {
+          _board[row][col].value = 0;
+        }
+        _board[row][col].isError = false;
+      }
+    }
+    
+    _history.clear();
+    _selectedValue = 0;
+    _selectedRow = 0;
+    _selectedColumn = 0;
+    _noteToggled = false;
+
     notifyListeners();
   }
 }

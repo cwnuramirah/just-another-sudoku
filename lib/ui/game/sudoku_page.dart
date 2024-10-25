@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:just_another_sudoku/data/models/board_model.dart';
-import 'package:just_another_sudoku/data/models/cell_model.dart';
 import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:just_another_sudoku/ui/common/chevron_back_button.dart';
 import 'package:just_another_sudoku/ui/game/keypad.dart';
-import 'package:just_another_sudoku/ui/common/option_menu.dart';
+import 'package:just_another_sudoku/ui/game/settings_modal.dart';
 import 'package:just_another_sudoku/ui/game/sudoku_board.dart';
 import 'package:just_another_sudoku/ui/game/timer.dart';
 import 'package:just_another_sudoku/ui/game/toolbar.dart';
@@ -24,16 +23,11 @@ class _SudokuPageState extends State<SudokuPage> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => BoardModel(widget.mode)),
-        ChangeNotifierProvider(create: (context) => CellModel()),
-        ChangeNotifierProvider(create: (context) => TimeHandler()),
-      ],
-      child: Builder(builder: (context) {
-        final timeHandler = context.read<TimeHandler>();
-        final boardModel = context.read<BoardModel>();
-
-        return Scaffold(
+        providers: [
+          ChangeNotifierProvider(create: (context) => BoardModel(widget.mode)),
+          ChangeNotifierProvider(create: (context) => TimeHandler()),
+        ],
+        child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
             title: const TimerButton(),
@@ -42,30 +36,8 @@ class _SudokuPageState extends State<SudokuPage> {
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
             ),
-            actions: [
-              Builder(
-                builder: (context) {
-                  return Menu(onPressed: () {
-                    Scaffold.of(context).openEndDrawer();
-
-                    if (timeHandler.isRunning && mounted) {
-                      timeHandler.stop();
-                      boardModel.toggleHide();
-                    }
-                  });
-                },
-              ),
-            ],
+            actions: const [Menu()],
           ),
-          onEndDrawerChanged: (isOpened) {
-            if (!isOpened && mounted) {
-              if (!timeHandler.isRunning) {
-                timeHandler.start();
-                boardModel.toggleHide();
-              }
-            }
-          },
-          endDrawer: const Drawer(child: SafeArea(child: OptionMenu())),
           body: const SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -86,21 +58,20 @@ class _SudokuPageState extends State<SudokuPage> {
               ),
             ),
           ),
-        );
-      }),
-    );
+        ));
   }
 }
 
 class Menu extends StatelessWidget {
-  const Menu({super.key, required this.onPressed});
-
-  final void Function()? onPressed;
+  const Menu({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final timeHandler = context.read<TimeHandler>();
+    final boardModel = context.read<BoardModel>();
+
     return IconButton(
-      onPressed: onPressed ?? () {},
+      onPressed: () => showSettingsModal(context, timeHandler, boardModel),
       icon: const SizedBox(
         height: 36,
         width: 36,

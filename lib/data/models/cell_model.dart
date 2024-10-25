@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-
-class CellModel with ChangeNotifier {
+class CellModel {
   int value;
   bool isFixed;
   bool isError;
