@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:just_another_sudoku/data/models/board_model.dart';
+import 'package:just_another_sudoku/data/providers/board_provider.dart';
 import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:just_another_sudoku/ui/common/option_menu.dart';
 
-void showSettingsModal(BuildContext context, TimeHandler timeHandler, BoardModel boardModel) {
+void showSettingsModal(BuildContext context, TimeHandler timeHandler, BoardProvider board) {
   showModalBottomSheet(
     context: context,
     useSafeArea: true,
@@ -30,12 +30,12 @@ void showSettingsModal(BuildContext context, TimeHandler timeHandler, BoardModel
   ).whenComplete(() {
     if (!timeHandler.isRunning) {
       timeHandler.start();
-      boardModel.toggleHide();
+      board.toggleHide();
     }
   });
 
   if (timeHandler.isRunning) {
     timeHandler.stop();
-    boardModel.toggleHide();
+    board.toggleHide();
   }
 }

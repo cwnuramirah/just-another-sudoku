@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:just_another_sudoku/data/models/board_model.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
+import 'package:just_another_sudoku/data/providers/board_provider.dart';
 import 'package:just_another_sudoku/data/providers/settings_provider.dart';
 import 'package:just_another_sudoku/theme/cell_style.dart';
 import 'package:provider/provider.dart';
@@ -17,15 +17,15 @@ class Cell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<BoardModel, CellModel>(
-        selector: (_, boardModel) => boardModel.board[column][row],
+    return Selector<BoardProvider, CellModel>(
+        selector: (_, board) => board.board[column][row],
         builder: (_, cell, __) {
-          final boardModel = context.watch<BoardModel>();
+          final board = context.watch<BoardProvider>();
           final settings = context.read<SettingsProvider>();
-          final selectedValue = boardModel.selectedValue;
-          final selectedRow = boardModel.selectedRow;
-          final selectedColumn = boardModel.selectedColumn;
-          final hide = boardModel.boardHidden;
+          final selectedValue = board.selectedValue;
+          final selectedRow = board.selectedRow;
+          final selectedColumn = board.selectedColumn;
+          final hide = board.boardHidden;
 
           CellStyle cellStyle = CellStyle(
             settings: settings,
@@ -40,7 +40,7 @@ class Cell extends StatelessWidget {
           return GestureDetector(
             key: key,
             onTap: () {
-              boardModel.selectCell(column, row);
+              board.selectCell(column, row);
             },
             child: Container(
               margin: cellStyle.getBoxMargin(),

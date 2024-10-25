@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:just_another_sudoku/data/models/board_model.dart';
+import 'package:just_another_sudoku/data/providers/board_provider.dart';
 import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:just_another_sudoku/ui/common/expanded_text_button.dart';
 import 'package:just_another_sudoku/ui/game/settings_modal.dart';
@@ -42,17 +42,17 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
         state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused) {
       final timeHandler = Provider.of<TimeHandler>(context, listen: false);
-      final boardModel = Provider.of<BoardModel>(context, listen: false);
+      final board = Provider.of<BoardProvider>(context, listen: false);
       if (timeHandler.isRunning) {
-        pauseDialog(context, timeHandler, boardModel);
+        pauseDialog(context, timeHandler, board);
       }
     }
   }
 
   Future<void> pauseDialog(
-      BuildContext context, TimeHandler time, BoardModel boardModel) {
+      BuildContext context, TimeHandler time, BoardProvider board) {
     time.stop();
-    boardModel.toggleHide();
+    board.toggleHide();
 
     return showDialog<void>(
       context: context,
@@ -66,14 +66,14 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
               ExpandedTextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  showSettingsModal(context, time, boardModel);
+                  showSettingsModal(context, time, board);
                 },
                 icon: TablerIcons.adjustments_horizontal,
                 label: 'Options',
               ),
               ExpandedTextButton(
                 onPressed: () {
-                  boardModel.resetBoard();
+                  board.resetBoard();
                   time.reset();
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
@@ -82,9 +82,9 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
               ),
               ExpandedTextButton(
                 onPressed: () {
-                  boardModel.resetBoard();
+                  board.resetBoard();
                   time.reset();
-                  boardModel.toggleHide();
+                  board.toggleHide();
                   time.start();
                   Navigator.of(context).pop();
                 },
@@ -97,7 +97,7 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
           actions: <Widget>[
             ExpandedTextButton(
               onPressed: () {
-                boardModel.toggleHide();
+                board.toggleHide();
                 time.start();
                 Navigator.of(context).pop();
               },
@@ -113,12 +113,12 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final boardModel = Provider.of<BoardModel>(context, listen: false);
+    final board = Provider.of<BoardProvider>(context, listen: false);
 
     return Consumer<TimeHandler>(
       builder: (context, time, _) {
         return TextButton.icon(
-          onPressed: () => pauseDialog(context, time, boardModel),
+          onPressed: () => pauseDialog(context, time, board),
           style: TextButton.styleFrom(foregroundColor: Colors.black),
           icon: SizedBox(
             width: 20.0,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:just_another_sudoku/data/models/board_model.dart';
+import 'package:just_another_sudoku/data/providers/board_provider.dart';
 import 'package:provider/provider.dart';
 
 class Keypad extends StatelessWidget {
@@ -7,11 +7,11 @@ class Keypad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boardModel = Provider.of<BoardModel>(context);
+    final board = Provider.of<BoardProvider>(context);
     final selectedRow =
-        context.select<BoardModel, int>((model) => model.selectedRow);
+        context.select<BoardProvider, int>((model) => model.selectedRow);
     final selectedColumn =
-        context.select<BoardModel, int>((model) => model.selectedColumn);
+        context.select<BoardProvider, int>((model) => model.selectedColumn);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -21,12 +21,12 @@ class Keypad extends StatelessWidget {
             width: 34.0,
             child: TextButton(
               onPressed: () {
-                if (!boardModel.board[selectedColumn][selectedRow].isFixed) {
-                  if (!boardModel.noteToggled) {
-                    boardModel.clearNotes();
-                    boardModel.addMove(selectedColumn, selectedRow, i+1);
+                if (!board.board[selectedColumn][selectedRow].isFixed) {
+                  if (!board.noteToggled) {
+                    board.clearNotes();
+                    board.addMove(selectedColumn, selectedRow, i+1);
                   } else {
-                    boardModel.addNote(i + 1);
+                    board.addNote(i + 1);
                   }
                 }
               },
@@ -36,7 +36,7 @@ class Keypad extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 36.0,
-                  color: boardModel.noteToggled ? Colors.grey.shade600 : Colors.black,
+                  color: board.noteToggled ? Colors.grey.shade600 : Colors.black,
                 ),
               ),
             ),

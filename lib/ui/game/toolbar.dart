@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:just_another_sudoku/data/models/board_model.dart';
+import 'package:just_another_sudoku/data/providers/board_provider.dart';
 import 'package:provider/provider.dart';
 
 class Toolbar extends StatelessWidget {
@@ -8,7 +8,7 @@ class Toolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boardModel = Provider.of<BoardModel>(context);
+    final board = Provider.of<BoardProvider>(context);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -20,15 +20,14 @@ class Toolbar extends StatelessWidget {
         ),
         CircleIconButton(
           onPressed: () {
-            boardModel.undoMove();
+            board.undoMove();
           },
           icon: TablerIcons.arrow_back_up,
         ),
         CircleIconButton(
           onPressed: () {
-            boardModel.addMove(
-                boardModel.selectedColumn, boardModel.selectedRow, 0);
-            boardModel.clearNotes();
+            board.addMove(board.selectedColumn, board.selectedRow, 0);
+            board.clearNotes();
           },
           icon: TablerIcons.eraser,
         ),
@@ -36,10 +35,10 @@ class Toolbar extends StatelessWidget {
           width: 76.0,
           child: CircleIconButtonWithBadge(
             onPressed: () {
-              boardModel.toggleNote();
+              board.toggleNote();
             },
             icon: TablerIcons.pencil,
-            badge: Text(boardModel.noteToggled ? 'ON' : 'OFF'),
+            badge: Text(board.noteToggled ? 'ON' : 'OFF'),
           ),
         ),
       ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:just_another_sudoku/data/models/board_model.dart';
+import 'package:just_another_sudoku/data/providers/board_provider.dart';
 import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:just_another_sudoku/ui/common/chevron_back_button.dart';
 import 'package:just_another_sudoku/ui/game/keypad.dart';
@@ -24,7 +24,7 @@ class _SudokuPageState extends State<SudokuPage> {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => BoardModel(widget.mode)),
+          ChangeNotifierProvider(create: (context) => BoardProvider(widget.mode)),
           ChangeNotifierProvider(create: (context) => TimeHandler()),
         ],
         child: Scaffold(
@@ -68,10 +68,10 @@ class Menu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeHandler = context.read<TimeHandler>();
-    final boardModel = context.read<BoardModel>();
+    final boardProvider = context.read<BoardProvider>();
 
     return IconButton(
-      onPressed: () => showSettingsModal(context, timeHandler, boardModel),
+      onPressed: () => showSettingsModal(context, timeHandler, boardProvider),
       icon: const SizedBox(
         height: 36,
         width: 36,

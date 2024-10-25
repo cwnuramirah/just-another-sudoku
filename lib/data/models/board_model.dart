@@ -1,9 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
 import 'package:just_another_sudoku/logic/generator.dart';
-import 'package:just_another_sudoku/logic/sudoku_error_handler.dart';
 
-class BoardModel with ChangeNotifier {
   // final List<List<int>> _initBoard = [
   //   [0, 0, 3, 1, 2, 4, 0, 0, 7],
   //   [0, 0, 1, 6, 3, 9, 8, 4, 0],
@@ -16,32 +13,36 @@ class BoardModel with ChangeNotifier {
   //   [8, 5, 0, 9, 1, 0, 4, 0, 0],
   // ];
 
-  late String _mode;
-  late List<List<CellModel>> _board;
-  late List<Move> _history;
+  class BoardModel {
+  late String mode;
+  late List<List<CellModel>> board;
+  late List<Move> history;
 
-  int _selectedValue = 0;
-  int _selectedRow = 0;
-  int _selectedColumn = 0;
-  bool _noteToggled = false;
-  bool _isBoardHidden = false;
+  int selectedValue = 0;
+  int selectedRow = 0;
+  int selectedColumn = 0;
+  bool noteToggled = false;
+  bool isBoardHidden = false;
 
   BoardModel(String? mode) {
-    _mode = mode ?? "Easy";
-    _board = _generateBoard();
-    _history = [];
+    this.mode = mode ?? "Easy";
+    board = _generateBoard();
+    history = [];
   }
 
   List<List<CellModel>> _generateBoard() {
     List<List<int>> puzzle = [];
 
-    switch (_mode) {
+    switch (mode) {
       case "Easy":
-        puzzle = generatePuzzle(minClues: 46); // Easy: 36-40 clues
+        puzzle = generatePuzzle(minClues: 46);
+        break;
       case "Normal":
-        puzzle = generatePuzzle(minClues: 34); // Normal: 30-35 clues
+        puzzle = generatePuzzle(minClues: 34);
+        break;
       case "Hard":
-        puzzle = generatePuzzle(minClues: 28); // Hard: 25-29 clues
+        puzzle = generatePuzzle(minClues: 28);
+        break;
     }
 
     return List.generate(
@@ -54,112 +55,6 @@ class BoardModel with ChangeNotifier {
         ),
       ),
     );
-  }
-
-  List<List<CellModel>> get board => _board;
-  int get selectedValue => _selectedValue;
-  int get selectedRow => _selectedRow;
-  int get selectedColumn => _selectedColumn;
-  bool get noteToggled => _noteToggled;
-  bool get boardHidden => _isBoardHidden;
-
-  void toggleHide() {
-    _isBoardHidden = !_isBoardHidden;
-    notifyListeners();
-  }
-
-  void selectCell(int column, int row) {
-    _selectedColumn = column;
-    _selectedRow = row;
-    _selectedValue = _board[_selectedColumn][_selectedRow].value;
-    notifyListeners();
-  }
-
-  void updateCell({int? col, int? row, required int value}) {
-    int targetCol = col ?? _selectedColumn;
-    int targetRow = row ?? _selectedRow;
-    _selectedValue = value;
-
-    // Ignore invalid values and skip for fixed cell
-    if (value < 0 || value > 9 || _board[targetCol][targetRow].isFixed) return;
-
-    _board[targetCol][targetRow].value = value;
-
-    SudokuErrorHandler().handleCellError(_board, targetCol, targetRow, value);
-
-    notifyListeners();
-  }
-
-  void toggleNote() {
-    _noteToggled = !_noteToggled;
-    notifyListeners();
-  }
-
-  void addNote(int number) {
-    if (number < 1 || number > 9) return; // Ignore invalid values
-
-    CellModel cell = _board[_selectedColumn][_selectedRow];
-
-    if (cell.value != 0) {
-      updateCell(value: 0);
-    }
-
-    if (cell.notes.contains(number)) {
-      cell.notes.remove(number);
-    } else {
-      cell.notes.add(number);
-    }
-
-    notifyListeners();
-  }
-
-  void clearNotes() {
-    _board[_selectedColumn][_selectedRow].notes.clear();
-    notifyListeners();
-  }
-
-  void addMove(int col, int row, int newValue) {
-    _history.add(
-      Move(
-        column: col,
-        row: row,
-        prevValue: _board[col][row].value,
-        newValue: newValue,
-      ),
-    );
-    updateCell(value: newValue);
-  }
-
-  void undoMove() {
-    if (_history.isEmpty) return;
-    final latestMove = _history.removeLast();
-
-    selectCell(latestMove.column, latestMove.row);
-    updateCell(
-      col: latestMove.column,
-      row: latestMove.row,
-      value: latestMove.prevValue,
-    );
-  }
-
-  // Reset the board to the initial state
-  void resetBoard() {
-    for (int row = 0; row < 9; row++) {
-      for (int col = 0; col < 9; col++) {
-        if (!_board[row][col].isFixed) {
-          _board[row][col].value = 0;
-        }
-        _board[row][col].isError = false;
-      }
-    }
-    
-    _history.clear();
-    _selectedValue = 0;
-    _selectedRow = 0;
-    _selectedColumn = 0;
-    _noteToggled = false;
-
-    notifyListeners();
   }
 }
 
