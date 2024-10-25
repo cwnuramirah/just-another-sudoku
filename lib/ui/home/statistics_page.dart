@@ -74,13 +74,13 @@ class StatisticsPage extends StatelessWidget {
                 ),
                 _buildStatsList(
                   context: context,
-                  icon: TablerIcons.x,
+                  icon: TablerIcons.flag_x,
                   title: "Average mistakes per game",
                   value: "4",
                 ),
                 _buildStatsList(
                   context: context,
-                  icon: TablerIcons.checks,
+                  icon: TablerIcons.flag_check,
                   title: "Win without mistake",
                   value: "5",
                 ),

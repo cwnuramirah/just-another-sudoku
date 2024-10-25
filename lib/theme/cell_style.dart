@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
-import 'package:just_another_sudoku/data/models/color_theme.dart';
-import 'package:just_another_sudoku/data/models/settings_model.dart';
+import 'package:just_another_sudoku/data/providers/settings_provider.dart';
 
 class CellStyle {
-  final SettingsModel settings;
-  final ColorTheme color;
+  final SettingsProvider settings;
   final int column;
   final int row;
   final CellModel cell;
@@ -15,7 +13,6 @@ class CellStyle {
 
   CellStyle({
     required this.settings,
-    required this.color,
     required this.column,
     required this.row,
     required this.cell,
@@ -33,25 +30,25 @@ class CellStyle {
 
     // HIGHLIGHT CELL
     if (isInSameColumn || isInSameRow || isInSameBox) {
-      backgroundColor = color.highlight;
+      backgroundColor = settings.activeColorTheme.highlight;
     }
 
     // HIGHLIGHT SAME NUMBER
-    if (settings.highlightSameNumber) {
+    if (settings.preferences.highlightSameNumbers) {
       if (selectedValue != 0 && selectedValue != null) {
         if (cell.value == selectedValue) {
-          backgroundColor = color.highlightSameNumber;
+          backgroundColor = settings.activeColorTheme.highlightSameNumber;
         }
       }
     }
 
     // SELECTED CELL
     if (column == selectedColumn && row == selectedRow) {
-      backgroundColor = color.selected;
+      backgroundColor = settings.activeColorTheme.selected;
     }
 
     // ERROR CELL
-    if (settings.highlightViolation) {
+    if (settings.preferences.highlightViolation) {
       if (cell.isError) {
         backgroundColor = Colors.red.shade100;
       }
@@ -64,10 +61,10 @@ class CellStyle {
     Color textColor = Colors.black;
 
     if (!cell.isFixed) {
-      textColor = color.text;
+      textColor = settings.activeColorTheme.text;
     }
 
-    if (settings.highlightViolation) {
+    if (settings.preferences.highlightViolation) {
       if (cell.isError && !cell.isFixed) {
         textColor = Colors.red;
       }

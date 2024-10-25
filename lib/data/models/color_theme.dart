@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/theme/color_contants.dart';
 
-class ColorTheme with ChangeNotifier {
-  late List<Color> _color;
-  late int _colorIndex;
+class ColorTheme {
+  List<Color> color;
+  int colorIndex;
 
-  ColorTheme({List<Color>? initialColor, int? colorIndex}) {
-    _color = initialColor ?? ColorConstants.blue;
-    _colorIndex = colorIndex ?? 0;
-  }
-
-  /// Use [ColorConstants]
-  void changeColorTheme(List<Color> color, int colorIndex) {
-    _color = color;
-    _colorIndex = colorIndex;
-    notifyListeners();
-  }
+  ColorTheme({
+    List<Color>? colors,
+    int? colorIndex,
+  })  : color = colors ?? ColorConstants.blue,
+        colorIndex = colorIndex ?? 0;
 
   List<List<Color>> get colorList => [
         ColorConstants.blue,
@@ -23,10 +17,9 @@ class ColorTheme with ChangeNotifier {
         ColorConstants.green,
         ColorConstants.yellow,
       ];
-  int get colorIndex => _colorIndex;
-  List<Color> get colorSwatch => _color;
-  Color get highlight => _color[3];
-  Color get highlightSameNumber => _color[2];
-  Color get selected => _color[1];
-  Color get text => _color[0];
+
+  Color get highlight => color[3];
+  Color get highlightSameNumber => color[2];
+  Color get selected => color[1];
+  Color get text => color[0];
 }

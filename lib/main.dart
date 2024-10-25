@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:just_another_sudoku/data/models/color_theme.dart';
-import 'package:just_another_sudoku/data/models/settings_model.dart';
-import 'package:just_another_sudoku/theme/color_contants.dart';
+import 'package:just_another_sudoku/data/providers/settings_provider.dart';
 import 'package:just_another_sudoku/ui/home/home_page.dart';
 // import 'package:just_another_sudoku/ui/game/sudoku_page.dart';
 import 'package:provider/provider.dart';
@@ -13,19 +11,13 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final preferredColor = ColorConstants.green;
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) =>
-              ColorTheme(initialColor: preferredColor, colorIndex: 2),
-        ),
-        ChangeNotifierProvider(create: (context) => SettingsModel()),
+        ChangeNotifierProvider(create: (context) => SettingsProvider()),
       ],
-      child: Consumer<ColorTheme>(builder: (context, colorTheme, _) {
+      child: Consumer<SettingsProvider>(builder: (context, settings, _) {
         return MaterialApp(
           title: 'just another sudoku',
           debugShowCheckedModeBanner: false,
@@ -39,10 +31,10 @@ class MyApp extends StatelessWidget {
             ),
             colorScheme: ColorScheme(
               brightness: Brightness.light,
-              primary: colorTheme.colorSwatch[0],
+              primary: settings.activeColorTheme.color[0],
               onPrimary: Colors.white,
-              secondary: colorTheme.colorSwatch[2],
-              onSecondary: colorTheme.colorSwatch[0],
+              secondary: settings.activeColorTheme.color[2],
+              onSecondary: settings.activeColorTheme.color[0],
               surfaceTint: Colors.white,
               error: Colors.red,
               onError: Colors.white,

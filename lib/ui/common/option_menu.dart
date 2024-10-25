@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:just_another_sudoku/data/models/color_theme.dart';
-import 'package:just_another_sudoku/data/models/settings_model.dart';
+import 'package:just_another_sudoku/data/providers/settings_provider.dart';
 import 'package:just_another_sudoku/ui/common/styled_list.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +25,10 @@ class OptionMenu extends StatelessWidget {
 
   Widget _buildColorThemeSelector({
     required BuildContext context,
-    required ColorTheme colorContext,
+    required SettingsProvider settings,
   }) {
-    final colors = colorContext.colorList;
+    final ColorTheme colorTheme = ColorTheme();
+    final colors = colorTheme.colorList;
 
     return StyledListSection(
       context: context,
@@ -43,11 +44,11 @@ class OptionMenu extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               Text(
-                _getCurrentColorThemeName(colorIndex: colorContext.colorIndex),
+                _getCurrentColorThemeName(colorIndex: settings.activeThemeIndex),
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
-                    .copyWith(color: colorContext.text),
+                    .copyWith(color: settings.activeColorTheme.text),
               ),
             ],
           ),
@@ -64,7 +65,7 @@ class OptionMenu extends StatelessWidget {
                       color: colors[i][1],
                       borderRadius: BorderRadius.circular(100),
                       border: Border.all(
-                        color: i == colorContext.colorIndex
+                        color: i == settings.activeThemeIndex
                             ? colors[i][0]
                             : Colors.transparent,
                         width: 2.0,
@@ -74,7 +75,7 @@ class OptionMenu extends StatelessWidget {
                       icon: const SizedBox.shrink(),
                       highlightColor: colors[i][0],
                       onPressed: () =>
-                          colorContext.changeColorTheme(colors[i], i),
+                          settings.changeColorTheme(i),
                     ),
                   );
                 }),
@@ -106,21 +107,20 @@ class OptionMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorContext = context.watch<ColorTheme>();
-    final settings = context.watch<SettingsModel>();
+    final settings = context.watch<SettingsProvider>();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildColorThemeSelector(context: context, colorContext: colorContext),
+        _buildColorThemeSelector(context: context, settings: settings),
         StyledListSection(
           context: context,
           children: [
             _buildSwitchSetting(
               context: context,
               title: "Highlight same number",
-              value: settings.highlightSameNumber,
-              onChanged: settings.switchHighlightSameNumber,
+              value: settings.preferences.highlightSameNumbers,
+              onChanged: settings.toggleHighlightSameNumbers,
             ),
           ],
         ),
@@ -130,20 +130,20 @@ class OptionMenu extends StatelessWidget {
             _buildSwitchSetting(
               context: context,
               title: "Highlight violation instantly",
-              value: settings.highlightViolation,
+              value: settings.preferences.highlightViolation,
               onChanged: (value) {
-                settings.switchHighlightViolation(value);
+                settings.toggleHighlightViolation(value);
                 if (!value) {
-                  settings.switchCompareToSolution(false);
+                  settings.toggleCompareWithSolution(false);
                 }
               },
             ),
             _buildSwitchSetting(
               context: context,
               title: "Compare to final solution",
-              value: settings.compareToSolution,
-              onChanged: settings.switchCompareToSolution,
-              enabled: settings.highlightViolation,
+              value: settings.preferences.compareWithSolution,
+              onChanged: settings.toggleCompareWithSolution,
+              enabled: settings.preferences.highlightViolation,
             ),
           ],
         ),

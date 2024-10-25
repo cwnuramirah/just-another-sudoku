@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/models/board_model.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
-import 'package:just_another_sudoku/data/models/color_theme.dart';
-import 'package:just_another_sudoku/data/models/settings_model.dart';
+import 'package:just_another_sudoku/data/providers/settings_provider.dart';
 import 'package:just_another_sudoku/theme/cell_style.dart';
 import 'package:provider/provider.dart';
 
@@ -22,8 +21,7 @@ class Cell extends StatelessWidget {
         selector: (_, boardModel) => boardModel.board[column][row],
         builder: (_, cell, __) {
           final boardModel = context.watch<BoardModel>();
-          final color = context.watch<ColorTheme>();
-          final settings = context.read<SettingsModel>();
+          final settings = context.read<SettingsProvider>();
           final selectedValue = boardModel.selectedValue;
           final selectedRow = boardModel.selectedRow;
           final selectedColumn = boardModel.selectedColumn;
@@ -31,7 +29,6 @@ class Cell extends StatelessWidget {
 
           CellStyle cellStyle = CellStyle(
             settings: settings,
-            color: color,
             column: column,
             row: row,
             cell: cell,
