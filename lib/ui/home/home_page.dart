@@ -6,7 +6,7 @@ import 'package:just_another_sudoku/logic/game_mode.dart';
 import 'package:just_another_sudoku/ui/common/expanded_text_button.dart';
 import 'package:just_another_sudoku/ui/common/get_formatted_time.dart';
 import 'package:just_another_sudoku/ui/game/sudoku_page.dart';
-import 'package:just_another_sudoku/ui/home/game_mode_list.dart';
+import 'package:just_another_sudoku/ui/common/new_game_button.dart';
 import 'package:just_another_sudoku/ui/home/settings_page.dart';
 import 'package:just_another_sudoku/ui/home/statistics_page.dart';
 import 'package:provider/provider.dart';
@@ -56,15 +56,7 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 buildResumeButton(context),
-                ExpandedTextButton(
-                  primary: true,
-                  label: "New Game",
-                  onPressed: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (context) => const GameModeList());
-                  },
-                ),
+                const NewGameButton(),
               ],
             ),
           ),

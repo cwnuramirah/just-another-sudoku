@@ -32,8 +32,14 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
   void didChangeDependencies() {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final board = Provider.of<BoardProvider>(context, listen: false);
       final timeHandler = Provider.of<TimeHandler>(context, listen: false);
-      timeHandler.start(); // Start the timer when dependencies are set up
+
+      if (!board.isCompleted) {
+        timeHandler.start();
+      } else {
+        timeHandler.stop();
+      }
     });
   }
 
@@ -133,7 +139,8 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
     return Consumer<TimeHandler>(
       builder: (context, time, _) {
         return TextButton.icon(
-          onPressed: () => pauseDialog(context, time, board),
+          onPressed: () =>
+              board.isCompleted ? {} : pauseDialog(context, time, board),
           style: TextButton.styleFrom(foregroundColor: Colors.black),
           icon: SizedBox(
             width: 20.0,

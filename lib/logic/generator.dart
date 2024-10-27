@@ -134,6 +134,9 @@ bool hasUniqueSolution(List<List<int>> board) {
 List<List<int>> generatePuzzle({required int minClues}) {
   List<List<int>> board = generateFullBoard();
   shuffleBoard(board);
+  for (List<int> row in board) {
+    print(row);
+  }
   Random random = Random();
 
   int totalCells = 81;

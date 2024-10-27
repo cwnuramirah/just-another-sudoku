@@ -10,6 +10,9 @@ class BoardProvider with ChangeNotifier {
   late BoardModel _boardModel;
   late GameSessionProvider _game;
 
+  bool isCompleted = false;
+  int mistakeCount = 0;
+
   BoardProvider(
     GameMode? mode,
     List<List<CellModel>>? initialBoard,
@@ -32,7 +35,20 @@ class BoardProvider with ChangeNotifier {
     }
   }
 
-  // other methods...
+  void checkIfCompleted() {
+    int zeroCount =
+        board.expand((row) => row).where((cell) => cell.value == 0).length;
+    int errorCount =
+        board.expand((row) => row).where((cell) => cell.isError).length;
+
+        print(zeroCount);
+
+    if (zeroCount == 0 && errorCount == 0) {
+      isCompleted = true;
+      _game.completeGame();
+      notifyListeners();
+    }
+  }
 
   void toggleHide() {
     _boardModel.isBoardHidden = !_boardModel.isBoardHidden;
@@ -59,6 +75,8 @@ class BoardProvider with ChangeNotifier {
     SudokuErrorHandler()
         .handleCellError(_boardModel.board, targetCol, targetRow, value);
     notifyListeners();
+
+    checkIfCompleted();
   }
 
   void toggleNote() {

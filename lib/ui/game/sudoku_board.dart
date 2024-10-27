@@ -9,8 +9,8 @@ class SudokuBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final game = context.read<GameSessionProvider>();
-    final board = context.read<BoardProvider>();
+    final game = context.watch<GameSessionProvider>();
+    final board = context.watch<BoardProvider>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (game.currentGame != null && game.currentGame!.board == null) {
@@ -28,25 +28,32 @@ class SudokuBoard extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16.0),
           clipBehavior: Clip.hardEdge,
-          child: Column(
-            children: [
-              for (int col = 0; col < 9; col++)
-                Expanded(
-                  child: Row(
-                    children: [
-                      for (int row = 0; row < 9; row++)
-                        Expanded(
-                          child: Cell(
-                            key: ValueKey('cell-$col-$row'),
-                            column: col,
-                            row: row,
-                          ),
+          child: !board.isCompleted
+              ? Column(
+                  children: [
+                    for (int col = 0; col < 9; col++)
+                      Expanded(
+                        child: Row(
+                          children: [
+                            for (int row = 0; row < 9; row++)
+                              Expanded(
+                                child: Cell(
+                                  key: ValueKey('cell-$col-$row'),
+                                  column: col,
+                                  row: row,
+                                ),
+                              ),
+                          ],
                         ),
-                    ],
+                      ),
+                  ],
+                )
+              : const Center(
+                  child: Text(
+                    "Completed",
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
-            ],
-          ),
         ),
       ),
     );
