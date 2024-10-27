@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
 import 'package:just_another_sudoku/data/providers/board_provider.dart';
+import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
 import 'package:just_another_sudoku/data/providers/settings_provider.dart';
 import 'package:just_another_sudoku/theme/cell_style.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,7 @@ class Cell extends StatelessWidget {
     required this.column,
     required this.row,
   });
-  
+
   final int column;
   final int row;
 

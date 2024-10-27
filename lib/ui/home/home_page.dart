@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:just_another_sudoku/data/models/game_model.dart';
+import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
+import 'package:just_another_sudoku/logic/game_mode.dart';
 import 'package:just_another_sudoku/ui/common/expanded_text_button.dart';
+import 'package:just_another_sudoku/ui/common/get_formatted_time.dart';
+import 'package:just_another_sudoku/ui/game/sudoku_page.dart';
 import 'package:just_another_sudoku/ui/home/game_mode_list.dart';
 import 'package:just_another_sudoku/ui/home/settings_page.dart';
 import 'package:just_another_sudoku/ui/home/statistics_page.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -49,6 +55,7 @@ class HomePage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 16.0),
+                buildResumeButton(context),
                 ExpandedTextButton(
                   primary: true,
                   label: "New Game",
@@ -64,5 +71,34 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget buildResumeButton(BuildContext context) {
+    final gameSession = context.watch<GameSessionProvider>();
+
+    GameModel? onGoingGame = gameSession.currentGame;
+
+    if (gameSession.isInitialized && onGoingGame != null) {
+      return ExpandedTextButton(
+        primary: true,
+        label:
+            "Resume (${getGameModeText(onGoingGame.mode)} : ${getFormattedTime(onGoingGame.duration)})",
+        onPressed: () {
+          gameSession.resumeGame();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SudokuPage(
+                mode: onGoingGame.mode,
+                initialBoard: onGoingGame.board,
+                initialDuration: onGoingGame.duration,
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 }

@@ -1,20 +1,10 @@
 import 'package:just_another_sudoku/data/models/cell_model.dart';
+import 'package:just_another_sudoku/data/models/move.dart';
+import 'package:just_another_sudoku/logic/game_mode.dart';
 import 'package:just_another_sudoku/logic/generator.dart';
 
-  // final List<List<int>> _initBoard = [
-  //   [0, 0, 3, 1, 2, 4, 0, 0, 7],
-  //   [0, 0, 1, 6, 3, 9, 8, 4, 0],
-  //   [9, 4, 6, 0, 8, 0, 0, 1, 3],
-  //   [0, 2, 5, 3, 6, 1, 9, 0, 0],
-  //   [4, 0, 0, 0, 9, 2, 3, 5, 0],
-  //   [0, 6, 9, 4, 5, 0, 7, 2, 0],
-  //   [6, 9, 0, 2, 0, 0, 0, 3, 0],
-  //   [1, 0, 2, 8, 4, 0, 5, 0, 9],
-  //   [8, 5, 0, 9, 1, 0, 4, 0, 0],
-  // ];
-
-  class BoardModel {
-  late String mode;
+class BoardModel {
+  late GameMode mode;
   late List<List<CellModel>> board;
   late List<Move> history;
 
@@ -24,9 +14,9 @@ import 'package:just_another_sudoku/logic/generator.dart';
   bool noteToggled = false;
   bool isBoardHidden = false;
 
-  BoardModel(String? mode) {
-    this.mode = mode ?? "Easy";
-    board = _generateBoard();
+  BoardModel(GameMode? mode, List<List<CellModel>>? initialBoard) {
+    this.mode = mode ?? GameMode.easy;
+    board = initialBoard ?? _generateBoard();
     history = [];
   }
 
@@ -34,13 +24,13 @@ import 'package:just_another_sudoku/logic/generator.dart';
     List<List<int>> puzzle = [];
 
     switch (mode) {
-      case "Easy":
+      case GameMode.easy:
         puzzle = generatePuzzle(minClues: 46);
         break;
-      case "Normal":
+      case GameMode.normal:
         puzzle = generatePuzzle(minClues: 34);
         break;
-      case "Hard":
+      case GameMode.hard:
         puzzle = generatePuzzle(minClues: 28);
         break;
     }
@@ -56,18 +46,40 @@ import 'package:just_another_sudoku/logic/generator.dart';
       ),
     );
   }
-}
 
-class Move {
-  int column;
-  int row;
-  int prevValue = 0;
-  int newValue;
+  // Convert BoardModel to JSON
+  Map<String, dynamic> toJson() => {
+        'mode': mode.toString().split('.').last,
+        'board': board
+            .map((row) => row.map((cell) => cell.toJson()).toList())
+            .toList(),
+        'history': history.map((move) => move.toJson()).toList(),
+        'selectedValue': selectedValue,
+        'selectedRow': selectedRow,
+        'selectedColumn': selectedColumn,
+        'noteToggled': noteToggled,
+        'isBoardHidden': isBoardHidden,
+      };
 
-  Move({
-    required this.column,
-    required this.row,
-    this.prevValue = 0,
-    required this.newValue,
-  });
+  // Create BoardModel from JSON
+  factory BoardModel.fromJson(Map<String, dynamic> json) {
+    BoardModel boardModel = BoardModel(
+        GameMode.values.firstWhere((e) => e.toString().split('.').last == json['mode']),
+        (json['board'] as List)
+            .map((row) =>
+                (row as List).map((cell) => CellModel.fromJson(cell)).toList())
+            .toList());
+    boardModel.board = (json['board'] as List)
+        .map((row) =>
+            (row as List).map((cell) => CellModel.fromJson(cell)).toList())
+        .toList();
+    boardModel.history =
+        (json['history'] as List).map((move) => Move.fromJson(move)).toList();
+    boardModel.selectedValue = json['selectedValue'];
+    boardModel.selectedRow = json['selectedRow'];
+    boardModel.selectedColumn = json['selectedColumn'];
+    boardModel.noteToggled = json['noteToggled'];
+    boardModel.isBoardHidden = json['isBoardHidden'];
+    return boardModel;
+  }
 }

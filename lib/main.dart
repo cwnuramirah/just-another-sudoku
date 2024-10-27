@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
 import 'package:just_another_sudoku/data/providers/settings_provider.dart';
 import 'package:just_another_sudoku/ui/home/home_page.dart';
 // import 'package:just_another_sudoku/ui/game/sudoku_page.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => SettingsProvider()),
+        ChangeNotifierProvider(create: (context) => GameSessionProvider()),
       ],
       child: Consumer<SettingsProvider>(builder: (context, settings, _) {
         return MaterialApp(

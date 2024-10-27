@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:just_another_sudoku/data/providers/board_provider.dart';
+import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
 import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:just_another_sudoku/ui/common/expanded_text_button.dart';
 import 'package:just_another_sudoku/ui/game/settings_modal.dart';
@@ -73,8 +74,9 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
               ),
               ExpandedTextButton(
                 onPressed: () {
-                  board.resetBoard();
-                  time.reset();
+                  final gameSession = context.read<GameSessionProvider>();
+                  gameSession.pauseGame();
+
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 icon: TablerIcons.home,
@@ -82,6 +84,9 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
               ),
               ExpandedTextButton(
                 onPressed: () {
+                  final gameSession = context.read<GameSessionProvider>();
+                  gameSession.resetGameTime();
+
                   board.resetBoard();
                   time.reset();
                   board.toggleHide();
@@ -90,6 +95,16 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
                 },
                 icon: TablerIcons.reload,
                 label: 'Restart',
+              ),
+              ExpandedTextButton(
+                onPressed: () {
+                  board.resetBoard();
+                  board.toggleHide();
+                  time.start();
+                  Navigator.of(context).pop();
+                },
+                icon: TablerIcons.eraser,
+                label: 'Reset Board',
               ),
             ],
           ),
@@ -124,15 +139,13 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
             width: 20.0,
             height: 22.0,
             child: Icon(
-              time.isRunning
-                  ? TablerIcons.clock_pause
-                  : TablerIcons.clock_play,
+              time.isRunning ? TablerIcons.clock_pause : TablerIcons.clock_play,
               size: 20.0,
             ),
           ),
           label: SizedBox(
             width: 56.0,
-            child: Text(time.getFormattedTime(),
+            child: Text(time.formatTime(),
                 style: const TextStyle(height: 1.2, fontSize: 18.0)),
           ),
         );

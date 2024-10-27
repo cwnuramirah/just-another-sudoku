@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/models/board_model.dart';
 import 'package:just_another_sudoku/data/models/cell_model.dart';
+import 'package:just_another_sudoku/data/models/move.dart';
+import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
+import 'package:just_another_sudoku/logic/game_mode.dart';
 import 'package:just_another_sudoku/logic/sudoku_error_handler.dart';
 
 class BoardProvider with ChangeNotifier {
   late BoardModel _boardModel;
+  late GameSessionProvider _game;
 
-  BoardProvider(String? mode) {
-    _boardModel = BoardModel(mode);
+  BoardProvider(
+    GameMode? mode,
+    List<List<CellModel>>? initialBoard,
+    GameSessionProvider game,
+  ) {
+    _boardModel = BoardModel(mode, initialBoard);
+    _game = game;
   }
 
   List<List<CellModel>> get board => _boardModel.board;
@@ -16,6 +25,14 @@ class BoardProvider with ChangeNotifier {
   int get selectedColumn => _boardModel.selectedColumn;
   bool get noteToggled => _boardModel.noteToggled;
   bool get boardHidden => _boardModel.isBoardHidden;
+
+  void addBoardToGame() {
+    if (_game.currentGame != null && _game.currentGame!.board == null) {
+      _game.addBoard(_boardModel);
+    }
+  }
+
+  // other methods...
 
   void toggleHide() {
     _boardModel.isBoardHidden = !_boardModel.isBoardHidden;
@@ -34,10 +51,13 @@ class BoardProvider with ChangeNotifier {
     int targetRow = row ?? _boardModel.selectedRow;
     _boardModel.selectedValue = value;
 
-    if (value < 0 || value > 9 || _boardModel.board[targetCol][targetRow].isFixed) return;
+    if (value < 0 ||
+        value > 9 ||
+        _boardModel.board[targetCol][targetRow].isFixed) return;
 
     _boardModel.board[targetCol][targetRow].value = value;
-    SudokuErrorHandler().handleCellError(_boardModel.board, targetCol, targetRow, value);
+    SudokuErrorHandler()
+        .handleCellError(_boardModel.board, targetCol, targetRow, value);
     notifyListeners();
   }
 
@@ -49,7 +69,8 @@ class BoardProvider with ChangeNotifier {
   void addNote(int number) {
     if (number < 1 || number > 9) return;
 
-    CellModel cell = _boardModel.board[_boardModel.selectedColumn][_boardModel.selectedRow];
+    CellModel cell =
+        _boardModel.board[_boardModel.selectedColumn][_boardModel.selectedRow];
 
     if (cell.value != 0) {
       updateCell(value: 0);
@@ -65,7 +86,8 @@ class BoardProvider with ChangeNotifier {
   }
 
   void clearNotes() {
-    _boardModel.board[_boardModel.selectedColumn][_boardModel.selectedRow].notes.clear();
+    _boardModel.board[_boardModel.selectedColumn][_boardModel.selectedRow].notes
+        .clear();
     notifyListeners();
   }
 

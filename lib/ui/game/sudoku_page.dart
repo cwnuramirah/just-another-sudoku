@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:just_another_sudoku/data/models/board_model.dart';
 import 'package:just_another_sudoku/data/providers/board_provider.dart';
+import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
+import 'package:just_another_sudoku/logic/game_mode.dart';
 import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:just_another_sudoku/ui/common/chevron_back_button.dart';
 import 'package:just_another_sudoku/ui/game/keypad.dart';
@@ -11,9 +14,16 @@ import 'package:just_another_sudoku/ui/game/toolbar.dart';
 import 'package:provider/provider.dart';
 
 class SudokuPage extends StatefulWidget {
-  const SudokuPage({super.key, required this.mode});
+  const SudokuPage({
+    Key? key,
+    required this.mode,
+    this.initialBoard,
+    this.initialDuration = Duration.zero,
+  }) : super(key: key);
 
-  final String mode;
+  final GameMode mode;
+  final BoardModel? initialBoard;
+  final Duration initialDuration;
 
   @override
   State<SudokuPage> createState() => _SudokuPageState();
@@ -22,10 +32,18 @@ class SudokuPage extends StatefulWidget {
 class _SudokuPageState extends State<SudokuPage> {
   @override
   Widget build(BuildContext context) {
+    final gameSession = context.read<GameSessionProvider>();
+
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => BoardProvider(widget.mode)),
-          ChangeNotifierProvider(create: (context) => TimeHandler()),
+          ChangeNotifierProvider(
+            create: (context) => BoardProvider(
+              widget.mode,
+              widget.initialBoard?.board,
+              gameSession,
+            ),
+          ),
+          ChangeNotifierProvider(create: (context) => TimeHandler(widget.initialDuration)),
         ],
         child: Scaffold(
           appBar: AppBar(
@@ -33,6 +51,8 @@ class _SudokuPageState extends State<SudokuPage> {
             title: const TimerButton(),
             leading: ChevronBackButton(
               onPressed: () {
+                final gameSession = context.read<GameSessionProvider>();
+                gameSession.pauseGame();
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
             ),
