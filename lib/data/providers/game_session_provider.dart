@@ -79,6 +79,14 @@ class GameSessionProvider with ChangeNotifier {
     }
   }
 
+  void addMistakeCount() {
+    if (_currentGame != null) {
+      _currentGame!.mistakeCount++;
+      _saveCurrentGame();
+      notifyListeners();
+    }
+  }
+
   void pauseGame() {
     if (_currentGame != null && _currentGame!.startTime != null) {
       final elapsed = DateTime.now().difference(_currentGame!.startTime!);

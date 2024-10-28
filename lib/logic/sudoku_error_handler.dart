@@ -1,12 +1,14 @@
 import 'package:just_another_sudoku/data/models/cell_model.dart';
 
 class SudokuErrorHandler {
-  void handleCellError(
+  bool handleCellError(
       List<List<CellModel>> board, int col, int row, int value) {
     _resetErrors(board, col, row);
 
     board[col][row].isError =
         value != 0 && _checkForErrors(board, col, row, value);
+    
+    return board[col][row].isError;
   }
 
   bool _checkForErrors(

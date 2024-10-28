@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/providers/board_provider.dart';
 import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
+import 'package:just_another_sudoku/ui/common/get_formatted_time.dart';
 import 'package:just_another_sudoku/ui/game/cell.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +23,9 @@ class SudokuBoard extends StatelessWidget {
       aspectRatio: 0.98,
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.black,
+            color: !board.isCompleted
+                ? Colors.black
+                : Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(16.0),
             border: Border.all(width: 1.6, color: Colors.black)),
         child: ClipRRect(
@@ -48,10 +51,42 @@ class SudokuBoard extends StatelessWidget {
                       ),
                   ],
                 )
-              : const Center(
-                  child: Text(
-                    "Completed",
-                    style: TextStyle(color: Colors.white),
+              : Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Completed",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 8.0),
+                      DefaultTextStyle(
+                        style: Theme.of(context).textTheme.titleMedium!,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text("Time completed:  "),
+                                Text("Mistakes made:  "),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(getFormattedTime(game.prevGames.last.duration)),
+                                Text(board.mistakeCount.toString()),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
         ),

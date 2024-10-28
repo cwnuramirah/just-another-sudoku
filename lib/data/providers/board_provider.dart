@@ -41,8 +41,6 @@ class BoardProvider with ChangeNotifier {
     int errorCount =
         board.expand((row) => row).where((cell) => cell.isError).length;
 
-        print(zeroCount);
-
     if (zeroCount == 0 && errorCount == 0) {
       isCompleted = true;
       _game.completeGame();
@@ -72,8 +70,15 @@ class BoardProvider with ChangeNotifier {
         _boardModel.board[targetCol][targetRow].isFixed) return;
 
     _boardModel.board[targetCol][targetRow].value = value;
-    SudokuErrorHandler()
+
+    bool hasError = SudokuErrorHandler()
         .handleCellError(_boardModel.board, targetCol, targetRow, value);
+
+    if (hasError) {
+      mistakeCount++;
+	  _game.addMistakeCount();
+    }
+
     notifyListeners();
 
     checkIfCompleted();

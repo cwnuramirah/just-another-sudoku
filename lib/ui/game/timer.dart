@@ -31,15 +31,11 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final board = Provider.of<BoardProvider>(context, listen: false);
-      final timeHandler = Provider.of<TimeHandler>(context, listen: false);
 
-      if (!board.isCompleted) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final timeHandler = context.read<TimeHandler>();
+
         timeHandler.start();
-      } else {
-        timeHandler.stop();
-      }
     });
   }
 
@@ -48,8 +44,9 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
     if (state == AppLifecycleState.detached ||
         state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused) {
-      final timeHandler = Provider.of<TimeHandler>(context, listen: false);
-      final board = Provider.of<BoardProvider>(context, listen: false);
+      final timeHandler = context.read<TimeHandler>();
+      final board = context.read<BoardProvider>();
+
       if (timeHandler.isRunning) {
         pauseDialog(context, timeHandler, board);
       }
@@ -134,25 +131,26 @@ class _TimerButtonState extends State<TimerButton> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final board = Provider.of<BoardProvider>(context, listen: false);
+    return Consumer2<TimeHandler, BoardProvider>(
+      builder: (context, timeHandler, board, _) {
 
-    return Consumer<TimeHandler>(
-      builder: (context, time, _) {
         return TextButton.icon(
           onPressed: () =>
-              board.isCompleted ? {} : pauseDialog(context, time, board),
+              board.isCompleted ? {} : pauseDialog(context, timeHandler, board),
           style: TextButton.styleFrom(foregroundColor: Colors.black),
           icon: SizedBox(
             width: 20.0,
             height: 22.0,
             child: Icon(
-              time.isRunning ? TablerIcons.clock_pause : TablerIcons.clock_play,
+              timeHandler.isRunning
+                  ? TablerIcons.clock_pause
+                  : TablerIcons.clock_play,
               size: 20.0,
             ),
           ),
           label: SizedBox(
             width: 56.0,
-            child: Text(time.formatTime(),
+            child: Text(timeHandler.formatTime(),
                 style: const TextStyle(height: 1.2, fontSize: 18.0)),
           ),
         );

@@ -6,7 +6,6 @@ import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
 import 'package:just_another_sudoku/logic/game_mode.dart';
 import 'package:just_another_sudoku/logic/time_handler.dart';
 import 'package:just_another_sudoku/ui/common/chevron_back_button.dart';
-import 'package:just_another_sudoku/ui/common/expanded_text_button.dart';
 import 'package:just_another_sudoku/ui/game/keypad.dart';
 import 'package:just_another_sudoku/ui/game/settings_modal.dart';
 import 'package:just_another_sudoku/ui/game/sudoku_board.dart';
@@ -54,7 +53,7 @@ class _SudokuPageState extends State<SudokuPage> {
           return Scaffold(
             appBar: AppBar(
               centerTitle: true,
-              title: const TimerButton(),
+              title: board.isCompleted ? const SizedBox.shrink() : const TimerButton(),
               leading: ChevronBackButton(
                 onPressed: () {
                   if (!board.isCompleted) {
