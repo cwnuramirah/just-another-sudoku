@@ -7,8 +7,9 @@ import 'package:just_another_sudoku/logic/game_mode.dart';
 import 'package:just_another_sudoku/logic/sudoku_error_handler.dart';
 
 class BoardProvider with ChangeNotifier {
-  late BoardModel _boardModel;
+  late BoardModel _board;
   late GameSessionProvider _game;
+  late GameMode _mode;
 
   bool isCompleted = false;
   int mistakeCount = 0;
@@ -18,20 +19,22 @@ class BoardProvider with ChangeNotifier {
     List<List<CellModel>>? initialBoard,
     GameSessionProvider game,
   ) {
-    _boardModel = BoardModel(mode, initialBoard);
+    _board = BoardModel(mode, initialBoard);
     _game = game;
+    _mode = mode ?? GameMode.easy;
   }
 
-  List<List<CellModel>> get board => _boardModel.board;
-  int get selectedValue => _boardModel.selectedValue;
-  int get selectedRow => _boardModel.selectedRow;
-  int get selectedColumn => _boardModel.selectedColumn;
-  bool get noteToggled => _boardModel.noteToggled;
-  bool get boardHidden => _boardModel.isBoardHidden;
+  List<List<CellModel>> get board => _board.board;
+  GameMode get mode => _mode;
+  int get selectedValue => _board.selectedValue;
+  int get selectedRow => _board.selectedRow;
+  int get selectedColumn => _board.selectedColumn;
+  bool get noteToggled => _board.noteToggled;
+  bool get boardHidden => _board.isBoardHidden;
 
   void addBoardToGame() {
     if (_game.currentGame != null && _game.currentGame!.board == null) {
-      _game.addBoard(_boardModel);
+      _game.addBoard(_board);
     }
   }
 
@@ -49,30 +52,30 @@ class BoardProvider with ChangeNotifier {
   }
 
   void toggleHide() {
-    _boardModel.isBoardHidden = !_boardModel.isBoardHidden;
+    _board.isBoardHidden = !_board.isBoardHidden;
     notifyListeners();
   }
 
   void selectCell(int column, int row) {
-    _boardModel.selectedColumn = column;
-    _boardModel.selectedRow = row;
-    _boardModel.selectedValue = _boardModel.board[column][row].value;
+    _board.selectedColumn = column;
+    _board.selectedRow = row;
+    _board.selectedValue = _board.board[column][row].value;
     notifyListeners();
   }
 
   void updateCell({int? col, int? row, required int value}) {
-    int targetCol = col ?? _boardModel.selectedColumn;
-    int targetRow = row ?? _boardModel.selectedRow;
-    _boardModel.selectedValue = value;
+    int targetCol = col ?? _board.selectedColumn;
+    int targetRow = row ?? _board.selectedRow;
+    _board.selectedValue = value;
 
     if (value < 0 ||
         value > 9 ||
-        _boardModel.board[targetCol][targetRow].isFixed) return;
+        _board.board[targetCol][targetRow].isFixed) return;
 
-    _boardModel.board[targetCol][targetRow].value = value;
+    _board.board[targetCol][targetRow].value = value;
 
     bool hasError = SudokuErrorHandler()
-        .handleCellError(_boardModel.board, targetCol, targetRow, value);
+        .handleCellError(_board.board, targetCol, targetRow, value);
 
     if (hasError) {
       mistakeCount++;
@@ -85,7 +88,7 @@ class BoardProvider with ChangeNotifier {
   }
 
   void toggleNote() {
-    _boardModel.noteToggled = !_boardModel.noteToggled;
+    _board.noteToggled = !_board.noteToggled;
     notifyListeners();
   }
 
@@ -93,7 +96,7 @@ class BoardProvider with ChangeNotifier {
     if (number < 1 || number > 9) return;
 
     CellModel cell =
-        _boardModel.board[_boardModel.selectedColumn][_boardModel.selectedRow];
+        _board.board[_board.selectedColumn][_board.selectedRow];
 
     if (cell.value != 0) {
       updateCell(value: 0);
@@ -109,17 +112,17 @@ class BoardProvider with ChangeNotifier {
   }
 
   void clearNotes() {
-    _boardModel.board[_boardModel.selectedColumn][_boardModel.selectedRow].notes
+    _board.board[_board.selectedColumn][_board.selectedRow].notes
         .clear();
     notifyListeners();
   }
 
   void addMove(int col, int row, int newValue) {
-    _boardModel.history.add(
+    _board.history.add(
       Move(
         column: col,
         row: row,
-        prevValue: _boardModel.board[col][row].value,
+        prevValue: _board.board[col][row].value,
         newValue: newValue,
       ),
     );
@@ -127,8 +130,8 @@ class BoardProvider with ChangeNotifier {
   }
 
   void undoMove() {
-    if (_boardModel.history.isEmpty) return;
-    final latestMove = _boardModel.history.removeLast();
+    if (_board.history.isEmpty) return;
+    final latestMove = _board.history.removeLast();
 
     selectCell(latestMove.column, latestMove.row);
     updateCell(
@@ -141,17 +144,17 @@ class BoardProvider with ChangeNotifier {
   void resetBoard() {
     for (int row = 0; row < 9; row++) {
       for (int col = 0; col < 9; col++) {
-        if (!_boardModel.board[row][col].isFixed) {
-          _boardModel.board[row][col].value = 0;
+        if (!_board.board[row][col].isFixed) {
+          _board.board[row][col].value = 0;
         }
-        _boardModel.board[row][col].isError = false;
+        _board.board[row][col].isError = false;
       }
     }
-    _boardModel.history.clear();
-    _boardModel.selectedValue = 0;
-    _boardModel.selectedRow = 0;
-    _boardModel.selectedColumn = 0;
-    _boardModel.noteToggled = false;
+    _board.history.clear();
+    _board.selectedValue = 0;
+    _board.selectedRow = 0;
+    _board.selectedColumn = 0;
+    _board.noteToggled = false;
 
     notifyListeners();
   }

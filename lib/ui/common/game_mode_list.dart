@@ -16,7 +16,8 @@ class GameModeList extends StatelessWidget {
     return ExpandedTextButton(
       label: getGameModeText(mode),
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        
         final newGame = GameModel(
           gameStarted: DateTime.now(),
           mode: mode,

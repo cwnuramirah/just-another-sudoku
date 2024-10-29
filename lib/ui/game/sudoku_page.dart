@@ -36,63 +36,66 @@ class _SudokuPageState extends State<SudokuPage> {
     final gameSession = context.read<GameSessionProvider>();
 
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (context) => BoardProvider(
-              widget.mode,
-              widget.initialBoard?.board,
-              gameSession,
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => BoardProvider(
+            widget.mode,
+            widget.initialBoard?.board,
+            gameSession,
+          ),
+        ),
+        ChangeNotifierProvider(
+            create: (context) => TimeHandler(widget.initialDuration)),
+      ],
+      child: Builder(builder: (context) {
+        final board = context.watch<BoardProvider>();
+
+        return Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            title: board.isCompleted
+                ? const SizedBox.shrink()
+                : const TimerButton(),
+            leading: ChevronBackButton(
+              onPressed: () {
+                if (!board.isCompleted) {
+                  final gameSession = context.read<GameSessionProvider>();
+                  gameSession.pauseGame();
+                }
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+            ),
+            actions: const [Menu()],
+          ),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24.0),
+                    child: SudokuBoard(),
+                  ),
+                  !board.isCompleted
+                      ? const Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Toolbar(),
+                            ),
+                            SizedBox(height: 24.0),
+                            Keypad(),
+                          ],
+                        )
+                      : const NewGameButton(),
+                  const SizedBox(height: 36.0),
+                ],
+              ),
             ),
           ),
-          ChangeNotifierProvider(
-              create: (context) => TimeHandler(widget.initialDuration)),
-        ],
-        child: Builder(builder: (context) {
-          final board = context.watch<BoardProvider>();
-
-          return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: board.isCompleted ? const SizedBox.shrink() : const TimerButton(),
-              leading: ChevronBackButton(
-                onPressed: () {
-                  if (!board.isCompleted) {
-                    final gameSession = context.read<GameSessionProvider>();
-                    gameSession.pauseGame();
-                  }
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                },
-              ),
-              actions: const [Menu()],
-            ),
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24.0),
-                      child: SudokuBoard(),
-                    ),
-                    !board.isCompleted
-                        ? const Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Toolbar(),
-                              ),
-                              SizedBox(height: 24.0),
-                              Keypad(),
-                            ],
-                          )
-                        : const NewGameButton(),
-                    const SizedBox(height: 36.0),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }));
+        );
+      }),
+    );
   }
 }
 

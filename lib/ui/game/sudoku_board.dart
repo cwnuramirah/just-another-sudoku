@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/providers/board_provider.dart';
 import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
+import 'package:just_another_sudoku/logic/game_mode.dart';
 import 'package:just_another_sudoku/ui/common/get_formatted_time.dart';
 import 'package:just_another_sudoku/ui/game/cell.dart';
 import 'package:provider/provider.dart';
@@ -72,16 +73,21 @@ class SudokuBoard extends StatelessWidget {
                             const Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text("Time completed:  "),
-                                Text("Mistakes made:  "),
+                                Text("Mode:"),
+                                Text("Time completed:"),
+                                Text("Mistakes made:"),
                               ],
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(getFormattedTime(game.prevGames.last.duration)),
-                                Text(board.mistakeCount.toString()),
-                              ],
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(getGameModeText(board.mode)),
+                                  Text(getFormattedTime(game.prevGames.last.duration)),
+                                  Text(board.mistakeCount.toString()),
+                                ],
+                              ),
                             ),
                           ],
                         ),
