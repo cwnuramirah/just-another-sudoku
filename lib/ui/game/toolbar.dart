@@ -10,38 +10,49 @@ class Toolbar extends StatelessWidget {
   Widget build(BuildContext context) {
     final board = Provider.of<BoardProvider>(context);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        CircleIconButtonWithBadge(
-          onPressed: () {},
-          icon: TablerIcons.bulb,
-          badge: const Text('3'),
-        ),
-        CircleIconButton(
-          onPressed: () {
-            board.undoMove();
-          },
-          icon: TablerIcons.arrow_back_up,
-        ),
-        CircleIconButton(
-          onPressed: () {
-            board.addMove(board.selectedColumn, board.selectedRow, 0);
-            board.clearNotes();
-          },
-          icon: TablerIcons.eraser,
-        ),
-        SizedBox(
-          width: 76.0,
-          child: CircleIconButtonWithBadge(
-            onPressed: () {
-              board.toggleNote();
-            },
-            icon: TablerIcons.pencil,
-            badge: Text(board.noteToggled ? 'ON' : 'OFF'),
+    final screenWidth = MediaQuery.of(context).size.width;
+	final btnSize = (screenWidth * 0.12).clamp(36.0, 46.0);
+
+    return SizedBox(
+      height: btnSize,
+      width: screenWidth - 16.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CircleIconButtonWithBadge(
+            onPressed: () {},
+            icon: TablerIcons.bulb,
+            badge: const Text('3'),
+            btnSize: btnSize,
           ),
-        ),
-      ],
+          CircleIconButton(
+            onPressed: () {
+              board.undoMove();
+            },
+            icon: TablerIcons.arrow_back_up,
+            btnSize: btnSize,
+          ),
+          CircleIconButton(
+            onPressed: () {
+              board.addMove(board.selectedColumn, board.selectedRow, 0);
+              board.clearNotes();
+            },
+            icon: TablerIcons.eraser,
+            btnSize: btnSize,
+          ),
+          SizedBox(
+            width: btnSize + 30,
+            child: CircleIconButtonWithBadge(
+              onPressed: () {
+                board.toggleNote();
+              },
+              icon: TablerIcons.pencil,
+              badge: Text(board.noteToggled ? 'ON' : 'OFF'),
+              btnSize: btnSize,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -52,11 +63,13 @@ class CircleIconButtonWithBadge extends StatelessWidget {
     required this.onPressed,
     required this.icon,
     required this.badge,
+    required this.btnSize,
   });
 
   final Function() onPressed;
   final IconData icon;
   final Widget badge;
+  final double btnSize;
 
   @override
   Widget build(BuildContext context) {
@@ -66,17 +79,21 @@ class CircleIconButtonWithBadge extends StatelessWidget {
         CircleIconButton(
           onPressed: onPressed,
           icon: icon,
+          btnSize: btnSize,
         ),
         Container(
           decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(color: Colors.black, width: 1.6),
               borderRadius: BorderRadius.circular(100)),
-          margin: const EdgeInsets.only(left: 36.0),
+          margin: EdgeInsets.only(left: btnSize - 10),
           padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
           child: DefaultTextStyle(
             style: const TextStyle(
-                fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                height: 1.3,
+                color: Colors.black),
             child: badge,
           ),
         )
@@ -90,27 +107,36 @@ class CircleIconButton extends StatelessWidget {
     super.key,
     required this.onPressed,
     required this.icon,
+    required this.btnSize,
   });
 
   final Function() onPressed;
   final IconData icon;
+  final double btnSize;
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: onPressed,
-      alignment: Alignment.topCenter,
-      // The icon somehow is not centered by default.
-      icon: SizedBox(
-        width: 48.0,
-        height: 46.0,
-        child: Icon(icon),
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: btnSize + 3.0,
+        maxHeight: btnSize + 3.0,
       ),
-      style: IconButton.styleFrom(
-        padding: const EdgeInsets.all(0.0),
-        minimumSize: const Size(48.0, 48.0),
-        backgroundColor: Colors.white,
-        side: const BorderSide(color: Colors.black, width: 1.6),
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: IconButton(
+          onPressed: onPressed,
+          alignment: Alignment.center,
+          icon: Container(
+            margin:
+                const EdgeInsets.only(bottom: 4.0), // Offset for TablerIcons
+            child: Icon(icon, size: btnSize * 0.55),
+          ),
+          style: IconButton.styleFrom(
+            padding: EdgeInsets.zero,
+            backgroundColor: Colors.white,
+            side: const BorderSide(color: Colors.black, width: 1.6),
+          ),
+        ),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:just_another_sudoku/data/models/game_model.dart';
 import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
 import 'package:just_another_sudoku/logic/game_mode.dart';
+import 'package:just_another_sudoku/theme/body_style.dart';
 import 'package:just_another_sudoku/ui/common/expanded_text_button.dart';
 import 'package:just_another_sudoku/ui/common/get_formatted_time.dart';
 import 'package:just_another_sudoku/ui/game/sudoku_page.dart';
@@ -17,8 +18,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
+      body: Center(
+        child: BodyStyle(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 48.0),
             child: Column(
