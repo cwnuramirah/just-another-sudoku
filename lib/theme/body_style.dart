@@ -12,9 +12,18 @@ class BodyStyle extends StatelessWidget {
     bool isNonMobilePlatform = defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS;
 
     return SafeArea(
-      child: SizedBox(
-        width: isNonMobilePlatform ? minAppWidth : null,
-        child: child,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: isNonMobilePlatform ? minAppWidth : null,
+            height: isNonMobilePlatform ? minAppHeight : null,
+            child: Center(
+              child: child,
+            ),
+          ),
+        ),
       ),
     );
   }

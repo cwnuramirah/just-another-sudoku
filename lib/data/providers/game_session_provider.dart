@@ -41,8 +41,6 @@ class GameSessionProvider with ChangeNotifier {
   Future<void> _saveCurrentGame() async {
     if (isInitialized && _currentGame != null) {
       await _prefs.setString('currentGame', jsonEncode(_currentGame!.toJson()));
-
-      print("Current game saved");
     }
   }
 
@@ -51,8 +49,6 @@ class GameSessionProvider with ChangeNotifier {
       List<String> prevGamesJson =
           _prevGames.map((game) => jsonEncode(game.toJson())).toList();
       await _prefs.setStringList('prevGames', prevGamesJson);
-
-      print("Saved to previous games");
     }
   }
 

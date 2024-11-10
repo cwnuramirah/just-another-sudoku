@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const minAppWidth = 400.0;
-const minAppHeight = 700.0;
+const minAppHeight = 650.0;
 const minAppSize = Size(minAppWidth, minAppHeight);
 
 const initAppWidth = 520.0;

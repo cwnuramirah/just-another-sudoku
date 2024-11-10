@@ -2,7 +2,7 @@ import 'package:just_another_sudoku/data/models/game_model.dart';
 
 class StatisticsModel {
   late List<GameModel> games;
-  late List<GameModel> _completedGames;
+  late final List<GameModel> _completedGames;
 
   StatisticsModel({
     List<GameModel>? games,

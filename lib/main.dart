@@ -8,9 +8,9 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
-  if (defaultTargetPlatform == TargetPlatform.windows ||
+  if (!kIsWeb && (defaultTargetPlatform == TargetPlatform.windows ||
       defaultTargetPlatform == TargetPlatform.linux ||
-      defaultTargetPlatform == TargetPlatform.macOS) {
+      defaultTargetPlatform == TargetPlatform.macOS)) {
     WidgetsFlutterBinding.ensureInitialized();
     await windowManager.ensureInitialized();
 
