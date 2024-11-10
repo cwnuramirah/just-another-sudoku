@@ -1,32 +1,12 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_another_sudoku/data/providers/game_session_provider.dart';
 import 'package:just_another_sudoku/data/providers/settings_provider.dart';
-import 'package:just_another_sudoku/theme/size_constants.dart';
+import 'package:just_another_sudoku/logic/initialization_for_desktop.dart';
 import 'package:just_another_sudoku/ui/home/home_page.dart';
 import 'package:provider/provider.dart';
-import 'package:window_manager/window_manager.dart';
 
 void main() async {
-  if (!kIsWeb && (defaultTargetPlatform == TargetPlatform.windows ||
-      defaultTargetPlatform == TargetPlatform.linux ||
-      defaultTargetPlatform == TargetPlatform.macOS)) {
-    WidgetsFlutterBinding.ensureInitialized();
-    await windowManager.ensureInitialized();
-
-    WindowOptions windowOptions = const WindowOptions(
-      minimumSize: minAppSize,
-      size: initAppSize,
-      title: "just another sudoku.",
-    );
-
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.setMinimumSize(minAppSize);
-      await windowManager.show();
-      await windowManager.focus();
-    });
-  }
-
+  initializationForDesktop();
   runApp(const MyApp());
 }
 
